@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~
+  ~      Copyright (c) 2018-2025, lengleng All rights reserved.
+  ~
+  ~  Redistribution and use in source and binary forms, with or without
+  ~  modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice,
+  ~  this list of conditions and the following disclaimer.
+  ~  Redistributions in binary form must reproduce the above copyright
+  ~  notice, this list of conditions and the following disclaimer in the
+  ~  documentation and/or other materials provided with the distribution.
+  ~  Neither the name of the pig4cloud.com developer nor the names of its
+  ~  contributors may be used to endorse or promote products derived from
+  ~  this software without specific prior written permission.
+  ~  Author: lengleng (wangiegie@gmail.com)
+  ~
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pigx.api.application.mapper.SfEducationMapper">
+
+  <resultMap id="sfEducationMap" type="com.pig4cloud.pigx.api.application.entity.SfEducation">
+                  <id property="id" column="id"/>
+                        <result property="title" column="title"/>
+                        <result property="detail" column="detail"/>
+                        <result property="thumbnailId" column="thumbnail_id"/>
+                        <result property="fileType" column="file_type"/>
+                        <result property="fileId" column="file_id"/>
+                        <result property="hits" column="hits"/>
+                        <result property="issueTime" column="issue_time"/>
+                        <result property="beginTime" column="begin_time"/>
+                        <result property="endTime" column="end_time"/>
+            </resultMap>
+      <select id="getSfEducationPage" resultMap="sfEducationMap">
+      select id,
+			title,
+			detail,
+			thumbnail_id,
+			file_type,
+			file_id,
+			hits,
+			issue_time,
+			begin_time,
+			end_time
+			from sf_education 
+			<where>
+			  <if test="query.title!=null and query.title!=''">
+			  AND title like CONCAT('%', #{query.title}, '%')
+			  </if>
+			</where>
+			order by issue_time desc
+      </select>
+</mapper>

@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ~ ~ Copyright (c) 2018-2025, lengleng All rights reserved. ~ ~ Redistribution
+	and use in source and binary forms, with or without ~ modification, are permitted
+	provided that the following conditions are met: ~ ~ Redistributions of source
+	code must retain the above copyright notice, ~ this list of conditions and
+	the following disclaimer. ~ Redistributions in binary form must reproduce
+	the above copyright ~ notice, this list of conditions and the following disclaimer
+	in the ~ documentation and/or other materials provided with the distribution.
+	~ Neither the name of the pig4cloud.com developer nor the names of its ~
+	contributors may be used to endorse or promote products derived from ~ this
+	software without specific prior written permission. ~ Author: lengleng (wangiegie@gmail.com)
+	~ -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.pig4cloud.pigx.api.device.mapper.DmDeviceMapper">
+
+	<resultMap id="dmDeviceMap"
+		type="com.pig4cloud.pigx.api.device.entity.DmDevice">
+		<id property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="name" column="name" />
+		<result property="factorId" column="factor_id" />
+		<result property="brandId" column="brand_id" />
+		<result property="prodId" column="prod_id" />
+		<result property="typeId" column="type_id" />
+		<result property="productionDate" column="production_date" />
+		<result property="periodValidity" column="period_validity" />
+		<result property="networkUnitId" column="network_unit_id" />
+		<result property="networkUnitName" column="network_unit_name" />
+		<result property="buildId" column="build_id" />
+		<result property="buildName" column="build_name" />
+		<result property="countyId" column="county_id" />
+		<result property="countyName" column="county_name" />
+		<result property="videoAddr" column="video_addr" />
+		<result property="position" column="position" />
+		<result property="remark" column="remark" />
+		<result property="createUserId" column="create_user_id" />
+		<result property="createUser" column="create_user" />
+		<result property="createTime" column="create_time" />
+		<result property="updateUserId" column="update_user_id" />
+		<result property="updateUser" column="update_user" />
+		<result property="updateTime" column="update_time" />
+		<result property="isDelete" column="is_delete" />
+		<result property="alarmType" column="alarm_type" />
+	</resultMap>
+
+	<resultMap id="dmDeviceVoMap"
+		type="com.pig4cloud.pigx.api.device.vo.DmDeviceVO">
+		<id property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="name" column="name" />
+		<result property="factorId" column="factor_id" />
+		<result property="brandId" column="brand_id" />
+		<result property="prodId" column="prod_id" />
+		<result property="typeId" column="type_id" />
+		<result property="productionDate" column="production_date" />
+		<result property="periodValidity" column="period_validity" />
+		<result property="networkUnitId" column="network_unit_id" />
+		<result property="networkUnitName" column="network_unit_name" />
+		<result property="buildName" column="build_name" />
+		<result property="buildId" column="build_id" />
+		<result property="countyId" column="county_id" />
+		<result property="countyName" column="county_name" />
+		<result property="position" column="position" />
+		<result property="remark" column="remark" />
+		<result property="createUserId" column="create_user_id" />
+		<result property="createUser" column="create_user" />
+		<result property="createTime" column="create_time" />
+		<result property="updateUserId" column="update_user_id" />
+		<result property="updateUser" column="update_user" />
+		<result property="updateTime" column="update_time" />
+		<result property="factorName" column="factor_name" />
+		<result property="brandName" column="brand_name" />
+		<result property="prodName" column="prod_name" />
+		<result property="alarmType" column="alarm_type" />
+		<result property="codeAndName" column="code_and_name" />
+		<result property="videoAddr" column="video_addr" />
+		<result property="videoHdAddr" column="video_hd_addr" />
+		<result property="alarmValue" column="alarm_value" />
+		<result property="alarmReason" column="event_desc" />
+		<result property="realTimingData" column="realtimingdata" />
+	</resultMap>
+	<select id="getDeviceList" resultMap="dmDeviceVoMap">
+		select d.id,
+		d.code,
+		d.name,
+		d.factor_id,
+		d.brand_id,
+		d.prod_id,
+		d.type_id,
+		d.production_date,
+		d.period_validity,
+		d.network_unit_id,
+		d.network_unit_name,
+		d.build_id,
+		d.build_name,
+		d.county_id,
+		d.county_name,
+		d.position,
+		d.video_addr,
+		d.video_port,
+		d.video_username,
+		d.video_password,
+		d.remark,
+		d.status,
+		d.create_user_id,
+		d.create_user,
+		d.create_time,
+		d.update_user_id,
+		d.update_user,
+		d.update_time,
+		m.name as factor_name,
+		b.name as brand_name,
+		p.name as prod_name
+		from dm_device d
+		left join dm_manufactor m on d.factor_id=m.id
+		left join dm_brand b on d.brand_id=b.id
+		left join dm_product p on d.prod_id=p.id
+		<where>
+			<if test="query.name != null and query.name != ''">
+				and d.name LIKE CONCAT('%',#{query.name},'%')
+			</if>
+			<if test="query.prodName != null and query.prodName != ''">
+				and p.name like CONCAT('%',#{query.prodName},'%')
+			</if>
+			<if test="query.prodId != null and query.prodId != ''">
+				and d.prod_id = #{query.prodId}
+			</if>
+			<if test="query.typeId != null and query.typeId != ''">
+				and d.type_id = #{query.typeId}
+			</if>
+			 <if test="unitIds.size() > 0">
+					     and d.network_unit_id in
+							 <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+							  #{unitId}
+							 </foreach>
+					   </if>
+			and d.is_delete = 0
+		</where>
+		ORDER BY d.create_time DESC
+	</select>
+
+
+	<select id="getNoGroupDevice" resultMap="dmDeviceVoMap">
+		select
+		d.id,
+		d.code,
+		d.name,
+		d.factor_id,
+		d.brand_id,
+		d.prod_id,
+		d.type_id,
+		d.production_date,
+		d.period_validity,
+		d.network_unit_id,
+		d.build_id,
+		d.county_id,
+		d.position,
+		d.video_addr,
+		d.video_port,
+		d.video_username,
+		d.video_password,
+		d.remark,
+		d.status,
+		d.create_user_id,
+		d.create_time,
+		d.update_user_id,
+		d.update_time,
+		m.name as factor_name,
+		b.name as brand_name,
+		p.name as prod_name
+		from dm_device d
+		left join dm_manufactor m on d.factor_id=m.id
+		left join dm_brand b on d.brand_id=b.id
+		left join dm_product p on d.prod_id=p.id
+		where d.id not in(select device_id from dm_device_group where group_id
+		=#{query.groupId})
+		<if test="query.prodId != null and query.prodId != ''">
+		and d.prod_id = #{query.prodId}
+		</if>
+		and d.is_delete = 0
+		ORDER BY d.create_time DESC
+	</select>
+
+	<select id="getGroupDevice" resultMap="dmDeviceVoMap">
+		select
+		d.id,
+		d.code,
+		d.name,
+		d.factor_id,
+		d.brand_id,
+		d.prod_id,
+		d.type_id,
+		d.production_date,
+		d.period_validity,
+		d.network_unit_id,
+		d.build_id,
+		d.county_id,
+		d.position,
+		d.video_addr,
+		d.video_port,
+		d.video_username,
+		d.video_password,
+		d.remark,
+		d.status,
+		d.create_user_id,
+		d.create_time,
+		d.update_user_id,
+		d.update_time,
+		m.name as factor_name,
+		b.name as brand_name,
+		p.name as prod_name
+		from dm_device d
+		left join dm_manufactor m on d.factor_id=m.id
+		left join dm_brand b on d.brand_id=b.id
+		left join dm_product p on d.prod_id=p.id
+		where d.id in(select device_id from dm_device_group where group_id
+		=#{query.groupId})
+		<if test="query.prodId != null and query.prodId != ''">
+		and d.prod_id = #{query.prodId}
+		</if>
+		and d.is_delete = 0
+		ORDER BY d.create_time DESC
+	</select>
+
+	<select id="getDeviceCodeList" resultType="String">
+		SELECT  d.code
+		  FROM  dm_device d
+		 WHERE	d.is_delete = 0
+	</select>
+	<insert id="insertDeviceVideo">
+	   INSERT INTO dm_device_video(device_id,video_id) VALUES (#{devId},#{videoId});
+	</insert>
+	<select id="selectVideoDevice" resultMap="dmDeviceMap">
+		select
+		d.id,
+		d.code,
+		d.name,
+		d.factor_id,
+		d.brand_id,
+		d.prod_id,
+		d.type_id,
+		d.production_date,
+		d.period_validity,
+		d.network_unit_id,
+		d.build_id,
+		d.county_id,
+		d.position,
+		d.video_addr,
+		d.video_port,
+		d.video_username,
+		d.video_password,
+		d.remark,
+		d.status,
+		d.create_user_id,
+		d.create_time,
+		d.update_user_id,
+		d.update_time,
+		d.is_delete
+		from dm_device d
+		<where>
+			<if test="query.networkUnitId != null and query.networkUnitId != ''">
+				and d.network_unit_id = #{query.networkUnitId}
+			</if>
+			<if test="query.buildId != null and query.buildId != ''">
+				and d.build_id = #{query.buildId}
+			</if>
+			<if test="query.countyId != null and query.countyId != ''">
+				and d.county_id = #{query.countyId}
+			</if>
+			<if test="query.position != null and query.position != ''">
+				and d.position = #{query.position}
+			</if>
+			and d.is_delete = 0
+		</where>
+	</select>
+
+
+	<!--<select id="getDeviceData" resultMap="dmDeviceVoMap">-->
+		<!--select-->
+		<!--<include refid="Base_Column_List" />,-->
+		<!--m.name as factor_name,-->
+		<!--b.name as brand_name,-->
+		<!--p.name as prod_name,-->
+		<!--r.realtimingdata-->
+		<!--from dm_device d-->
+		<!--left join dm_realtimingdata r on d.code = r.device_code-->
+		<!--left join dm_manufactor m on d.factor_id=m.id-->
+		<!--left join dm_brand b on d.brand_id=b.id-->
+		<!--left join dm_product p on d.prod_id=p.id-->
+		<!--<where>-->
+			<!--<if test="query.name != null and query.name != ''">-->
+				<!--and d.name LIKE CONCAT('%',#{query.name},'%')-->
+			<!--</if>-->
+			<!--<if test="query.prodId != null and query.prodId != ''">-->
+				<!--and d.prod_id = #{query.prodId}-->
+			<!--</if>-->
+			<!--and d.is_delete = 0-->
+		<!--</where>-->
+		<!--ORDER BY d.create_time DESC-->
+	<!--</select>-->
+	<select id="findDeviceList" resultMap="dmDeviceVoMap">
+		select * from dm_device d
+		<where>
+			<if test="query.typeId != null and query.typeId != ''">
+				and d.type_id = #{query.typeId}
+			</if>
+			<if test="query.networkUnitId != null and query.networkUnitId != ''">
+				and d.network_unit_id like CONCAT('%',#{query.networkUnitId},'%')
+			</if>
+			and d.is_delete = 0
+		</where>
+	</select>
+	<select id="getDmDeviceByUnitIds" resultMap="dmDeviceMap">
+	 select id,
+             code,
+			 name,
+			 network_unit_id,
+			 network_unit_name,
+			 build_id,
+			 build_name
+			 from dm_device
+			 <where>
+			 <if test="unitIds.size() > 0">
+					     and network_unit_id in
+							 <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+							  #{unitId}
+							 </foreach>
+					   </if>
+					   and is_delete = 0
+			 </where>
+			 order by code asc
+ 	</select>
+
+ 	<select id="getDevicePostionByUnitId" resultMap="dmDeviceMap">
+ 	select distinct position
+			  from dm_device
+			  <where>
+			  <if test="unitId !=null and unitId !=''">
+			    and network_unit_id=#{unitId}
+			  </if>
+			  <if test="buildId !=null and buildId !=''">
+			    and build_id=#{buildId}
+			  </if>
+			  <if test="countyId !=null and countyId !=''">
+			    and county_id=#{countyId}
+			  </if>
+
+			  </where>
+ 	</select>
+	<select id="getDeviceInfo" resultMap="dmDeviceMap">
+	select id,code,name,network_unit_id,network_unit_name,video_addr,position from dm_device
+	<where>
+			<if test="query.position != null and query.position != ''">
+				and position = #{query.position}
+			</if>
+			<if test="query.networkUnitId != null and query.networkUnitId != ''">
+				and network_unit_id = #{query.networkUnitId}
+			</if>
+			<if test="query.typeId != null and query.typeId != ''">
+				and type_id = #{query.typeId}
+			</if>
+			<if test="unitIds.size() > 0">
+					     and network_unit_id in
+							 <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+							  #{unitId}
+							 </foreach>
+					   </if>
+			and is_delete = 0
+		</where>
+	</select>
+    <select id="queryDeviceCountByType" resultType="int">
+     select count(0) from dm_device where is_delete = 0
+     <if  test="query.typeId !=null and query.typeId != ''">
+		 and type_id=#{query.typeId}
+	 </if>
+     <if test="query.alarmType !=null and query.alarmType != ''">
+        and alarm_type=#{query.alarmType}
+     </if>
+     <if test="query.status !=null and query.status !=''">
+        and status=#{query.status}
+     </if>
+       <if test="unitIds.size() > 0">
+					     and network_unit_id in
+							 <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+							  #{unitId}
+							 </foreach>
+					   </if>
+    </select>
+    <select id="getDeviceInfoById" resultType="com.pig4cloud.pigx.api.device.vo.DmDeviceVO">
+    select dd.id,
+			dd.code,
+			dd.name,
+			dd.brand_id,
+			dd.prod_id,
+			dd.network_unit_id,
+			dd.network_unit_name,
+			dd.build_id,
+			dd.build_name,
+			dd.county_id,
+			dd.county_name,
+			dd.position,
+			dd.alarm_type,
+			dd.status,
+			dd.type_id,
+			dd.video_addr,
+			db.name as brand_name,
+			dp.name as prod_name
+			from dm_device dd
+			left join dm_brand db on dd.brand_id=db.id
+			left join dm_product dp on dd.prod_id=dp.id
+			where dd.id=#{devId}
+    </select>
+    <select id="getDeviceInfoByCode" resultType="com.pig4cloud.pigx.api.device.vo.DmDeviceVO">
+		      select id,
+		             code,
+					 name,
+				     factor_id,
+					 brand_id,
+					 prod_id,
+					 network_unit_id,
+					 network_unit_name,
+					 build_id,
+					 build_name,
+					 county_id,
+					 county_name,
+					 position,
+					 type_id,
+					 longitude,
+					 latitude,
+					 alarm_type,
+					 video_addr,
+					 video_hd_addr
+		from dm_device
+		where code=#{devCode} and is_delete=0
+    </select>
+    <select id="getDeviceInfoByCons" resultMap="dmDeviceVoMap">
+         select id,
+                code,
+                name,
+                concat(code," ",name) as code_and_name
+                from dm_device
+                <where>
+	                <if test="query.networkUnitId !=null and query.networkUnitId !=''">
+	                 and network_unit_id=#{query.networkUnitId}
+	                 </if>
+                     <if test="query.buildId !=null and query.buildId !=''">
+	                 and build_id=#{query.buildId}
+	                 </if>
+	                 <if test="query.countyId !=null and query.countyId !=''">
+	                 and county_id=#{query.countyId}
+	                 </if>
+	                 <if test="query.position !=null and query.position !=''">
+	                 and position=#{query.position}
+	                 </if>
+                </where>
+    </select>
+    <select id="getDeviceInfoBigData" resultMap="dmDeviceVoMap">
+		SELECT device.id,
+		device.code,
+		device.name,
+		device.network_unit_id,
+		device.network_unit_name,
+		device.build_id,
+		device.build_name,
+		device.county_id,
+		device.county_name,
+		device.position,
+		device.type_id,
+		device.longitude,
+		device.latitude,
+		device.alarm_type,
+		device.video_addr,
+		device.video_hd_addr,
+		alarm.alarm_value,
+		alarm.event_desc
+		FROM dm_device device
+		LEFT JOIN (SELECT a.device_code,a.alarm_time,a.event_desc,a.alarm_value FROM dm_alarminfo a
+		LEFT JOIN (SELECT MAX(alarm_time) AS alarm_time,device_code FROM dm_alarminfo WHERE device_status='0' GROUP BY device_code) b ON a.device_code=b.device_code
+		WHERE a.alarm_time=b.alarm_time ) alarm ON device.code=alarm.device_code
+		<where>
+			<if test="unitIds.size() > 0">
+				and device.network_unit_id in
+				<foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+					#{unitId}
+				</foreach>
+			</if>
+			<if test="query.typeId !=null and query.typeId !=''">
+				and device.type_id=#{query.typeId}
+			</if>
+			and is_delete='0'
+		</where>
+
+    </select>
+
+	<select id="getRealtimingData" resultType="java.lang.String">
+		SELECT
+			realtimingdata rdata
+		FROM
+			dm_realtimingdata
+		WHERE
+			device_code = #{dCode}
+		ORDER BY
+			send_time DESC
+			LIMIT 1
+	</select>
+
+    <select id="getVideoAddressByDeviceId" resultType="map">
+        select code as deviceCode,video_addr as videoAddr,video_hd_addr as videoHdAddr
+        from dm_device device
+        where EXISTS (select device_id from dm_device_video where device.id=video_id and device_id=#{devId})
+    </select>
+    <select id="getDeviceInfoByType" resultMap="dmDeviceVoMap">
+     select id,
+			 code,
+			 name,
+			 network_unit_id,
+			 network_unit_name,
+			 build_id,
+			 build_name,
+			 county_id,
+			 county_name,
+			 position,
+			 type_id,
+			 longitude,
+			 latitude,
+			 alarm_type,
+			 video_addr,
+			 video_hd_addr,
+			 'outfire_resource' as type
+			 from dm_device
+			 <where>
+			   <if test="typeId !=null and typeId !=''">
+			    and type_id=#{typeId}
+			   </if>
+			   <if test="unitIds.size() > 0">
+					     and network_unit_id in
+							 <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+							  #{unitId}
+							 </foreach>
+					   </if>
+			</where>
+    </select>
+    <select id="getTotalCountByUnitId" resultType="int">
+    select count(0) from dm_device where network_unit_id=#{unitId} and and is_delete = 0
+    </select>
+
+    <select id="getIntactCountByUnitId" resultType="int">
+    select count(0) from dm_device where network_unit_id=#{unitId} and and is_delete = 0
+    </select>
+
+	<update id="updateDeviceByCode" parameterType="com.pig4cloud.pigx.api.device.entity.DmDevice">
+		update dm_device
+		<set>
+			<if test="videoAddr != null">`video_addr` = #{videoAddr}, </if>
+			<if test="videoHdAddr != null">`video_hd_addr` = #{videoHdAddr}, </if>
+			<if test="status != null">`status` = #{status},</if>
+			<if test="imei != null">`imei` = #{imei}</if>
+		</set>
+		WHERE code = #{code}
+	</update>
+
+	<select id="findDeviceStatusGroup" resultType="map">
+		select 0 AS status,count(`status`) AS counts from dm_device
+		<where>
+			<if test="unitIds.size() > 0">
+			     network_unit_id in
+				<foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+					#{unitId}
+				</foreach>
+			</if>
+		and is_delete = 0
+		and status = 0
+		</where>
+        union  all
+		select 1 AS status,count(`status`) AS counts from dm_device
+		<where>
+			<if test="unitIds.size() > 0">
+				network_unit_id in
+				<foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+					#{unitId}
+				</foreach>
+			</if>
+			and is_delete = 0
+			and status = 1
+		</where>
+		union all
+		select 2 AS status,count(`status`) AS counts from dm_device
+		<where>
+			<if test="unitIds.size() > 0">
+				network_unit_id in
+				<foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+					#{unitId}
+				</foreach>
+			</if>
+			and is_delete = 0
+			and status = 2
+		</where>
+
+	</select>
+
+	<select id="findDeviceAlarmStatus" resultType="map">
+		SELECT count(`status`) AS counts, "离线" AS `status`
+         FROM dm_device
+		<where>
+		<if test="unitIds.size() > 0">
+			network_unit_id in
+			<foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+				#{unitId}
+			</foreach>
+		</if>
+	    and `status` = 0
+	    AND is_delete = 0
+		</where>
+        UNION ALL
+		SELECT count(handle_result) AS counts,"火灾" AS `status`
+	    FROM dm_alarminfo da LEFT JOIN dm_device dd ON da.device_code = dd.`code` and dd.is_delete = 0
+		<where>
+			<if test="unitIds.size() > 0">
+				dd.network_unit_id in
+				<foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+					#{unitId}
+				</foreach>
+			</if>
+			AND YEARWEEK(date_format(da.alarm_time,'%Y-%m-%d')) = YEARWEEK(now())
+			AND device_status = 1
+			AND handle_result = 4
+		</where>
+	    UNION ALL
+		SELECT count(alarm_type) AS counts,"故障" AS `status`
+		FROM dm_device
+		<where>
+			<if test="unitIds.size() > 0">
+				network_unit_id in
+				<foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+					#{unitId}
+				</foreach>
+			</if>
+			and alarm_type = 3
+		   AND is_delete = 0
+		</where>
+	</select>
+
+	<select id="findDeviceByStatus" resultType="com.pig4cloud.pigx.api.device.vo.DmDeviceVO">
+		SELECT dd.*,db.event_desc AS alarmReason ,db.alarm_time AS alarmTime
+		FROM dm_device dd left join (
+		SELECT t.* FROM
+		(SELECT device_code,max(alarm_time) AS alarm_time FROM dm_alarminfo
+		GROUP BY device_code) a
+		LEFT JOIN dm_alarminfo t ON t.alarm_time = a.alarm_time
+		) db
+		 on dd.`code` = db.device_code
+		<where>
+			<if test="unitIds.size() > 0">
+				dd.network_unit_id in
+				<foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+					#{unitId}
+				</foreach>
+			</if>
+			<if test="status != null and status != ''">
+				and dd.status = #{status}
+			</if>
+			<if test="alarmType != null and alarmType != ''">
+				and dd.alarm_type = #{alarmType}
+			</if>
+			AND dd.is_delete = 0
+		</where>
+
+	</select>
+
+	<select id="findDeviceByFireStatus" resultType="com.pig4cloud.pigx.api.device.vo.DmDeviceVO">
+		SELECT da.alarm_time,da.event_desc,dd.`name`,dd.network_unit_name,dd.build_name,dd.county_name,dd.position,dd.network_unit_id
+        FROM dm_alarminfo da LEFT JOIN dm_device dd ON da.device_code = dd.`code` and dd.is_delete = 0
+		<where>
+		<if test="unitIds.size() > 0">
+			network_unit_id in
+			<foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+				#{unitId}
+			</foreach>
+		</if>
+			AND YEARWEEK(date_format(da.alarm_time,'%Y-%m-%d')) = YEARWEEK(now())
+			AND device_status = 1
+			AND handle_result = 4
+		</where>
+	</select>
+	<select id="queryVideoAddrByUnitId" resultType="com.pig4cloud.pigx.api.device.vo.DmDeviceVO">
+		SELECT video_addr from dm_device
+		<where>
+			<if test="unitIds.size() > 0">
+				network_unit_id in
+				<foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+					#{unitId}
+				</foreach>
+			</if>
+		</where>
+	</select>
+</mapper>

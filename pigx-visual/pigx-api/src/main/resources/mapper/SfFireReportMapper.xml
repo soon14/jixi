@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~
+  ~      Copyright (c) 2018-2025, lengleng All rights reserved.
+  ~
+  ~  Redistribution and use in source and binary forms, with or without
+  ~  modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice,
+  ~  this list of conditions and the following disclaimer.
+  ~  Redistributions in binary form must reproduce the above copyright
+  ~  notice, this list of conditions and the following disclaimer in the
+  ~  documentation and/or other materials provided with the distribution.
+  ~  Neither the name of the pig4cloud.com developer nor the names of its
+  ~  contributors may be used to endorse or promote products derived from
+  ~  this software without specific prior written permission.
+  ~  Author: lengleng (wangiegie@gmail.com)
+  ~
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pigx.api.application.mapper.SfFireReportMapper">
+
+  <resultMap id="sfFireReportMap" type="com.pig4cloud.pigx.api.application.entity.SfFireReport">
+                  <id property="id" column="id"/>
+                        <result property="unitid" column="unitid"/>
+                        <result property="userid" column="userid"/>
+                        <result property="reporttype" column="reporttype"/>
+                        <result property="rYear" column="r_year"/>
+                        <result property="monthorweek" column="monthorweek"/>
+                        <result  property="filename" column="filename"/>
+                        <result property="deviceTotal" column="device_total"/>
+                        <result property="deviceIntactRate" column="device_intact_rate"/>
+                        <result property="deviceShould" column="device_should"/>
+                        <result property="deviceElectriFire" column="device_electri_fire"/>
+                        <result property="deviceAlarm" column="device_alarm"/>
+                        <result property="misreport" column="misreport"/>
+                        <result property="processed" column="processed"/>
+                        <result property="compared" column="compared"/>
+                        <result property="fireDrill" column="fire_drill"/>
+                        <result property="fireTraining" column="fire_training"/>
+                        <result property="videoLearning" column="video_learning"/>
+                        <result property="culture" column="culture"/>
+                        <result property="inspectionTimes" column="inspection_times"/>
+                        <result property="hiddenTroubleRate" column="hidden_trouble_rate"/>
+                        <result property="maintenanceTimes" column="maintenance_times"/>
+                        <result property="repairTimes" column="repair_times"/>
+                        <result property="replaceTimes" column="replace_times"/>
+                        <result property="structureType" column="structure_type"/>
+                        <result property="firePool" column="fire_pool"/>
+                        <result property="fireExit" column="fire_exit"/>
+                        <result property="fireRating" column="fire_rating"/>
+                        <result property="assessmentLevel" column="assessment_level"/>
+                        <result property="creator" column="creator"/>
+                        <result property="createtime" column="createtime"/>
+            </resultMap>
+            
+            <select id="getSfFireReportByCons" resultMap="sfFireReportMap">
+               select  id,
+					   unitid,
+					   userid,
+					   reporttype,
+					   r_year,
+					   monthorweek,
+					   filename,
+						device_total,
+						device_intact_rate,
+						device_should,
+						device_electri_fire,
+						device_alarm,
+						misreport,
+						processed,
+						compared,
+						fire_drill,
+						fire_training,
+						video_learning,
+						culture,
+						inspection_times,
+						hidden_trouble_rate,
+						maintenance_times,
+						repair_times,
+						replace_times,
+						structure_type,
+						fire_pool,
+						fire_exit,
+						fire_rating,
+						assessment_level,
+					    creator,
+						createtime from sf_fire_report 
+						<where>
+						<if test="query.id !=null and query.id !=''">
+						    and id=#{query.id}
+						</if>
+						<if test="query.unitid !=null and query.unitid !=''">
+						   and unitid=#{query.unitid}
+						</if>
+						<if test="query.userid !=null and query.userid !=''">
+						   and userid=#{query.userid}
+						</if>
+						<if test="query.reporttype !=null and query.reporttype !=''">
+						   and reporttype=#{query.reporttype}
+						</if>
+						<if test="query.rYear !=null and query.rYear !=''">
+						   and r_year=#{query.rYear}
+						</if>
+						<if test="query.monthorweek !=null and query.monthorweek !=''">
+						   and monthorweek=#{query.monthorweek}
+						</if>
+						</where>
+            </select>
+            <select id="getSfFireReportPage" resultType="com.pig4cloud.pigx.api.application.vo.SfFireReportVo" >
+               select  id,
+					   unitid,
+					   userid,
+					   reporttype,
+					   r_year,
+					   monthorweek,
+					   filename,
+					   creator,
+					   createtime from sf_fire_report 
+						<where>
+						<if test="query.unitid !=null and query.unitid !=''">
+						   and unitid=#{query.unitid}
+						</if>
+						<if test="query.userid !=null and query.userid !=''">
+						   and userid=#{query.userid}
+						</if>
+						<if test="query.reporttype !=null and query.reporttype !=''">
+						   and reporttype=#{query.reporttype}
+						</if>
+						<if test="query.rYear !=null and query.rYear !=''">
+						   and r_year=#{query.rYear}
+						</if>
+						<if test="query.monthorweek !=null and query.monthorweek !=''">
+						   and monthorweek=#{query.monthorweek}
+						</if>
+						</where>
+            </select>
+</mapper>

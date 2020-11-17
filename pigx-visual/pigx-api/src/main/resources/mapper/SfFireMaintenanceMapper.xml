@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~
+  ~      Copyright (c) 2018-2025, lengleng All rights reserved.
+  ~
+  ~  Redistribution and use in source and binary forms, with or without
+  ~  modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice,
+  ~  this list of conditions and the following disclaimer.
+  ~  Redistributions in binary form must reproduce the above copyright
+  ~  notice, this list of conditions and the following disclaimer in the
+  ~  documentation and/or other materials provided with the distribution.
+  ~  Neither the name of the pig4cloud.com developer nor the names of its
+  ~  contributors may be used to endorse or promote products derived from
+  ~  this software without specific prior written permission.
+  ~  Author: lengleng (wangiegie@gmail.com)
+  ~
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pigx.api.application.mapper.SfFireMaintenanceMapper">
+
+    <resultMap id="sfFireMaintenanceMap" type="com.pig4cloud.pigx.api.application.entity.SfFireMaintenance">
+        <id property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="companyId" column="company_id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="contactWay" column="contact_way"/>
+        <result property="contactPerson" column="contact_person"/>
+        <result property="produceCate" column="produce_cate"/>
+        <result property="produceName" column="produce_name"/>
+        <result property="factorId" column="factor_id"/>
+        <result property="brandId" column="brand_id"/>
+        <result property="area" column="area"/>
+        <result property="areaName" column="area_name"/>
+        <result property="address" column="address"/>
+        <result property="deviceCode" column="device_code"/>
+        <result property="deviceName" column="device_name"/>
+        <result property="networkUnitId" column="network_unit_id"/>
+        <result property="buildId" column="build_id"/>
+        <result property="buildName" column="build_name"/>
+        <result property="countyId" column="county_id"/>
+        <result property="countyName" column="county_name"/>
+        <result property="position" column="position"/>
+        <result property="faultDesc" column="fault_desc"/>
+        <result property="applyOrgId" column="apply_org_id"/>
+        <result property="applyOrgName" column="apply_org_name"/>
+        <result property="handleResult" column="handle_result"/>
+        <result property="handleStatus" column="handle_status"/>
+        <result property="alarmType" column="alarm_type"/>
+        <result property="alarmTime" column="alarm_time"/>
+        <result property="source" column="source"/>
+        <result property="remark" column="remark"/>
+        <result property="createUserId" column="create_user_id"/>
+        <result property="createUserName" column="create_user_name"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateUserId" column="update_user_id"/>
+        <result property="updateUserName" column="update_user_name"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="images" column="images"/>
+    </resultMap>
+    <select id="getMaintenanceRecord" resultMap="sfFireMaintenanceMap">
+        select id,
+        code,
+        company_id,
+        company_name,
+        apply_org_name,
+        device_code,
+        device_name,
+        create_time,
+        alarm_type,
+        alarm_time,
+        position
+        from sf_fire_maintenance
+        <where>
+            <if test="query.produceCate !=null and query.produceCate !=''">
+                and produce_cate=#{produceCate}
+            </if>
+            <if test="query.createTime !=null and query.createTime !=''">
+                and create_time LIKE CONCAT(#{query.createTime},'%')
+            </if>
+            <if test="query.handleStatus !=null">
+                and handle_status=#{query.handleStatus}
+            </if>
+            <if test="query.source !=null and query.source !=''">
+                and source = #{query.source}
+            </if>
+            <if test="query.companyId !=null and query.companyId !='' ">
+                and company_id = #{query.companyId}
+            </if>
+            <if test="unitIds.size() > 0">
+                and network_unit_id in
+                <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+                    #{unitId}
+                </foreach>
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+    <select id="getMaintenanceDetail" resultType="com.pig4cloud.pigx.api.application.vo.SfFireMaintenanceVo">
+            select id,
+             code,
+			 company_id,
+			 company_name,
+			 apply_org_name,
+			 contact_way,
+			 contact_person,
+			 produce_cate,
+			 produce_name,
+			 device_name,
+			 device_code,
+			 create_time,
+			 position,
+			 alarm_type,
+			 alarm_time,
+			 fault_desc,
+			 handle_result,
+			 images
+			 from sf_fire_maintenance where id=#{mainId}
+            </select>
+    <update id="maintenanceHandle">
+              update sf_fire_maintenance set handle_result=#{save.handleResult},handle_status=#{save.handleStatus},
+              images=#{save.images},update_user_id=#{save.updateUserId},update_time=#{save.updateTime} where id=#{save.id}
+            </update>
+
+    <select id="selectGraphStatistics" resultType="com.pig4cloud.pigx.api.application.vo.SfFireMaintenanceVo">
+        select * from sf_fire_maintenance
+        where 1 = 1
+        <if test="unitIds != null and unitIds.size()>0">
+            and network_unit_id in
+            <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+                #{unitId}
+            </foreach>
+        </if>
+        and YEARWEEK(date_format(create_time,'%Y-%m-%d')) = YEARWEEK(now())
+    </select>
+    <select id="getMaintenanceEvent" resultType="com.pig4cloud.pigx.api.application.vo.SfFireMaintenanceVo">
+    select main.device_code,
+           main.create_time,
+           main.fault_desc 
+			 from sf_fire_maintenance main
+			 <where>
+			   <if test="deviceStatus!=null and deviceStatus!=''">
+			     and main.handle_status=#{deviceStatus}
+			   </if>
+			   <if test="unitIds.size() > 0">
+                and main.network_unit_id in
+                <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+                    #{unitId}
+                </foreach>
+            </if>
+			 </where>
+    </select>
+    <select id="getMaintenanceRecordByTime" resultType="com.pig4cloud.pigx.api.application.vo.SfFireMaintenanceVo">
+    select id,
+    code,
+    company_id,
+    company_name,
+    create_time
+    from sf_fire_maintenance
+    <where>
+        <if test="unitIds.size() > 0">
+            and network_unit_id in
+            <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+                #{unitId}
+            </foreach>
+        </if>
+        and YEARWEEK(date_format(create_time,'%Y-%m-%d')) = YEARWEEK(now())
+        order by create_time desc
+    </where>
+</select>
+</mapper>

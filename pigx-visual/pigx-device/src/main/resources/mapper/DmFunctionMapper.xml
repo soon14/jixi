@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ~ ~ Copyright (c) 2018-2025, lengleng All rights reserved. ~ ~ Redistribution 
+	and use in source and binary forms, with or without ~ modification, are permitted 
+	provided that the following conditions are met: ~ ~ Redistributions of source 
+	code must retain the above copyright notice, ~ this list of conditions and 
+	the following disclaimer. ~ Redistributions in binary form must reproduce 
+	the above copyright ~ notice, this list of conditions and the following disclaimer 
+	in the ~ documentation and/or other materials provided with the distribution. 
+	~ Neither the name of the pig4cloud.com developer nor the names of its ~ 
+	contributors may be used to endorse or promote products derived from ~ this 
+	software without specific prior written permission. ~ Author: lengleng (wangiegie@gmail.com) 
+	~ -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.pig4cloud.pigx.device.generator.mapper.DmFunctionMapper">
+
+	<resultMap id="dmFunctionMap"
+		type="com.pig4cloud.pigx.device.generator.entity.DmFunction">
+		<id property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="name" column="name" />
+		<result property="factorId" column="factor_id" />
+		<result property="brandId" column="brand_id" />
+		<result property="prodId" column="prod_id" />
+		<result property="typeId" column="type_id" />
+		<result property="funcType" column="func_type" />
+		<result property="funcId" column="func_id" />
+		<result property="dataType" column="data_type" />
+		<result property="eventType" column="event_type" />
+		<result property="upperLimit" column="upper_limit" />
+		<result property="lowerLimit" column="lower_limit" />
+		<result property="switch" column="switch" />
+		<result property="unitId" column="unit_id" />
+		<result property="required" column="required" />
+		<result property="remark" column="remark" />
+		<result property="createUserId" column="create_user_id" />
+		<result property="createUser" column="create_user" />
+		<result property="createTime" column="create_time" />
+		<result property="updateUserId" column="update_user_id" />
+		<result property="updateUser" column="updateUser" />
+		<result property="updateTime" column="update_time" />
+	</resultMap>
+	<resultMap id="dmFunctionVoMap"
+		type="com.pig4cloud.pigx.device.generator.vo.DmFunctionVo">
+		<id property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="name" column="name" />
+		<result property="factorId" column="factor_id" />
+		<result property="brandId" column="brand_id" />
+		<result property="prodId" column="prod_id" />
+		<result property="typeId" column="type_id" />
+		<result property="funcType" column="func_type" />
+		<result property="funcId" column="func_id" />
+		<result property="dataType" column="data_type" />
+		<result property="eventType" column="event_type" />
+		<result property="upperLimit" column="upper_limit" />
+		<result property="lowerLimit" column="lower_limit" />
+		<result property="switch" column="switch" />
+		<result property="unitId" column="unit_id" />
+		<result property="required" column="required" />
+		<result property="remark" column="remark" />
+		<result property="createUserId" column="create_user_id" />
+		<result property="createUser" column="create_user" />
+		<result property="createTime" column="create_time" />
+		<result property="updateUserId" column="update_user_id" />
+		<result property="updateUser" column="updateUser" />
+		<result property="updateTime" column="update_time" />
+		<result property="factorName" column="factor_name" />
+		<result property="brandName" column="brand_name" />
+		<result property="prodName" column="prod_name" />
+	</resultMap>
+	<select id="getFunctionList" resultMap="dmFunctionVoMap">
+		SELECT
+		f.id,
+		f.code,
+		f.name,
+		f.factor_id,
+		f.brand_id,
+		f.prod_id,
+		f.type_id,
+		f.func_type,
+		f.func_id,
+		f.event_type,
+		f.data_type,
+		f.upper_limit,
+		f.lower_limit,
+		f.volume_switch,
+		f.unit_id,
+		f.required,
+		f.remark,
+		f.create_user_id,
+		f.create_time,
+		f.update_user_id,
+		f.update_time,
+		m.name as factor_name,
+		b.name as brand_name,
+		p.name as prod_name
+		from dm_function f
+		left join dm_manufactor m on f.factor_id=m.id
+		left join dm_brand b on f.brand_id=b.id
+		left join dm_product p on f.prod_id=p.id
+		<where>
+			<if test="query.typeId != null and query.typeId != ''">
+				and f.type_id = #{query.typeId}
+			</if>
+		</where>
+		ORDER BY f.create_time DESC
+	</select>
+
+	<select id="getNoDeviceFunction"
+		parameterType="java.lang.String" resultMap="dmFunctionVoMap">
+		select f.id,
+		f.code,
+		f.name,
+		f.factor_id,
+		f.brand_id,
+		f.prod_id,
+		f.type_id,
+		f.func_type,
+		f.func_id,
+		f.event_type,
+		f.data_type,
+		f.upper_limit,
+		f.lower_limit,
+		f.volume_switch,
+		f.unit_id,
+		f.required,
+		f.remark,
+		f.create_user_id,
+		f.create_time,
+		f.update_user_id,
+		f.update_time,
+		m.name as factor_name,
+		b.name as brand_name,
+		p.name as prod_name
+		from dm_function f
+		left join dm_manufactor m on f.factor_id=m.id
+		left join dm_brand b on f.brand_id=b.id
+		left join dm_product p on f.prod_id=p.id
+		<where>
+			<if test="devId != null and devId != ''">
+			not EXISTS (select func_id from dm_device_function where f.id=func_id and dev_id = #{devId} )
+			and f.type_id = (select type_id from dm_device where id = #{devId})
+			</if>
+		</where>
+		ORDER BY f.create_time DESC
+	</select>
+	<select id="getFunctionByProdId" resultMap="dmFunctionMap">
+		SELECT
+		f.id,
+		f.code,
+		f.name,
+		f.factor_id,
+		f.brand_id,
+		f.prod_id,
+		f.type_id,
+		f.func_type,
+		f.func_id,
+		f.event_type,
+		f.data_type,
+		f.upper_limit,
+		f.lower_limit,
+		f.volume_switch,
+		f.unit_id,
+		f.required,
+		f.remark,
+		f.create_user_id,
+		f.create_time,
+		f.update_user_id,
+		f.update_time
+		from dm_function f
+		<where>
+			<if test="prodId != null and prodId != ''">
+				and (f.prod_id = #{prodId} or f.prod_id is null)
+			</if>
+		</where>
+	</select>
+</mapper>

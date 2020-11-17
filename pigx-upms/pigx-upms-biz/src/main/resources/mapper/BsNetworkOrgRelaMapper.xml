@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~
+  ~      Copyright (c) 2018-2025, lengleng All rights reserved.
+  ~
+  ~  Redistribution and use in source and binary forms, with or without
+  ~  modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice,
+  ~  this list of conditions and the following disclaimer.
+  ~  Redistributions in binary form must reproduce the above copyright
+  ~  notice, this list of conditions and the following disclaimer in the
+  ~  documentation and/or other materials provided with the distribution.
+  ~  Neither the name of the pig4cloud.com developer nor the names of its
+  ~  contributors may be used to endorse or promote products derived from
+  ~  this software without specific prior written permission.
+  ~  Author: lengleng (wangiegie@gmail.com)
+  ~
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pigx.admin.mapper.BsNetworkOrgRelaMapper">
+    <resultMap id="bsNetworkOrgRelaResultMap" type="com.pig4cloud.pigx.admin.api.entity.BsNetworkOrgRela">
+        <id property="id" column="id"/>
+        <result property="unitId" column="unit_id"/>
+        <result property="unitName" column="unit_name"/>
+        <result property="orgTypeCode" column="org_type_code"/>
+        <result property="orgId" column="org_id"/>
+        <result property="orgName" column="org_name"/>
+    </resultMap>
+
+    <insert id="saveBatch" parameterType="java.util.List" useGeneratedKeys="false">
+        insert into bs_network_org_rela
+        ( id,unit_id,unit_name,org_type_code,org_id,org_name)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.id},
+            #{item.unitId},
+            #{item.unitName},
+            #{item.orgTypeCode},
+            #{item.orgId},
+            #{item.orgName}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 通过机构ID删除联网单位机构关系信息 -->
+    <delete id="deleteByOrgId" parameterType="String">
+        delete from bs_network_org_rela where org_id = #{orgId}
+    </delete>
+
+    <!-- 根据id批量查询联网单位机构关系信息 -->
+    <select id="findByOrgId" parameterType="java.lang.String" resultType="java.lang.String">
+        select unit_id from bs_network_org_rela where org_id = #{orgId}
+    </select>
+</mapper>

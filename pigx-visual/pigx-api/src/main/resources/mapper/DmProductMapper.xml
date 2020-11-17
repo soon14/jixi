@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ~ ~ Copyright (c) 2018-2025, lengleng All rights reserved. ~ ~ Redistribution 
+	and use in source and binary forms, with or without ~ modification, are permitted 
+	provided that the following conditions are met: ~ ~ Redistributions of source 
+	code must retain the above copyright notice, ~ this list of conditions and 
+	the following disclaimer. ~ Redistributions in binary form must reproduce 
+	the above copyright ~ notice, this list of conditions and the following disclaimer 
+	in the ~ documentation and/or other materials provided with the distribution. 
+	~ Neither the name of the pig4cloud.com developer nor the names of its ~ 
+	contributors may be used to endorse or promote products derived from ~ this 
+	software without specific prior written permission. ~ Author: lengleng (wangiegie@gmail.com) 
+	~ -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.pig4cloud.pigx.api.device.mapper.DmProductMapper">
+
+	<resultMap id="dmProductMap"
+		type="com.pig4cloud.pigx.api.device.entity.DmProduct">
+		<id property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="name" column="name" />
+		<result property="factorId" column="factor_id" />
+		<result property="brandId" column="brand_id" />
+		<result property="typeId" column="type_id" />
+		<result property="netMode" column="net_mode" />
+		<result property="dataDockingMode" column="data_docking_mode" />
+		<result property="dataProtocol" column="data_protocol" />
+		<result property="remark" column="remark" />
+		<result property="createUserId" column="create_user_id" />
+		<result property="createUser" column="create_user"/>
+		<result property="createTime" column="create_time" />
+		<result property="updateUserId" column="update_user_id" />
+		<result property="updateUser" column="update_user"/>
+		<result property="updateTime" column="update_time" />
+	</resultMap>
+	<resultMap id="dmProductDTOMap"
+		type="com.pig4cloud.pigx.api.device.dto.DmProductDTO">
+		<id property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="name" column="name" />
+		<result property="factorId" column="factor_id" />
+		<result property="brandId" column="brand_id" />
+		<result property="typeId" column="type_id" />
+		<result property="netMode" column="net_mode" />
+		<result property="dataDockingMode" column="data_docking_mode" />
+		<result property="dataProtocol" column="data_protocol" />
+		<result property="remark" column="remark" />
+		<result property="createUserId" column="create_user_id" />
+		<result property="createTime" column="create_time" />
+		<result property="updateUserId" column="update_user_id" />
+		<result property="updateTime" column="update_time" />
+	</resultMap>
+<resultMap id="dmProductVoMap"
+		type="com.pig4cloud.pigx.api.device.vo.DmProductVo">
+		<id property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="name" column="name" />
+		<result property="factorId" column="factor_id" />
+		<result property="brandId" column="brand_id" />
+		<result property="typeId" column="type_id" />
+		<result property="netMode" column="net_mode" />
+		<result property="dataDockingMode" column="data_docking_mode" />
+		<result property="dataProtocol" column="data_protocol" />
+		<result property="remark" column="remark" />
+		<result property="createUserId" column="create_user_id" />
+		<result property="createUser" column="create_user"/>
+		<result property="createTime" column="create_time" />
+		<result property="updateUserId" column="update_user_id" />
+		<result property="updateUser" column="update_user"/>
+		<result property="updateTime" column="update_time" />
+		<result property="factorName" column="factor_name" />
+		<result property="brandName" column="brand_name" />
+	</resultMap>
+	<select id="getSelectBrandId" resultMap="dmProductDTOMap">
+		SELECT
+		*
+		FROM
+		dm_product
+		<where>
+		 <if test="brandId != null and brandId != ''">
+		 brand_id = #{brandId}
+		 </if>
+		</where>	
+	</select>
+  <select id="getProductList" resultMap="dmProductVoMap">
+                SELECT
+						p.id,
+						p.code,
+						p.name,
+						p.factor_id,
+						p.brand_id,
+						p.type_id,
+						p.net_mode,
+						p.data_docking_mode,
+						p.data_protocol,
+						p.remark,
+						p.create_user_id,
+						p.create_time,
+						p.update_user_id,
+						p.update_time,
+						m.name as factor_name,
+		                b.name as brand_name
+						FROM
+						dm_product p
+						left join dm_manufactor m on p.factor_id=m.id
+		                left join dm_brand b on p.brand_id=b.id
+						<where>
+			<if test="query.name != null and query.name != ''">
+				and p.name LIKE CONCAT('%',#{query.name},'%')
+			</if>
+			<if test="query.typeId != null and query.typeId != ''">
+				and p.type_id = #{query.typeId}
+			</if>
+		</where>
+		ORDER BY p.create_time DESC
+            </select>
+            <select id="getTypeIdByProdId" resultType="int">
+             select type_id from dm_product where id=#{prodId}
+            </select>
+</mapper>

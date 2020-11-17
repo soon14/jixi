@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+        namespace="com.pig4cloud.pigx.api.application.mapper.SfInspectionPointMapper">
+
+    <resultMap id="sfInspectionPointMap"
+               type="com.pig4cloud.pigx.api.application.entity.SfInspectionPoint">
+        <id property="id" column="id"/>
+        <result property="orgId" column="org_id"/>
+        <result property="orgName" column="org_name"/>
+        <result property="pid" column="pid"/>
+        <result property="pname" column="pname"/>
+        <result property="pointName" column="point_name"/>
+        <result property="pointBarCode" column="point_bar_code"/>
+        <result property="pointRfidCode" column="point_rfid_code"/>
+        <result property="pointQrCode" column="point_qr_code"/>
+        <result property="binding" column="binding"/>
+        <result property="pointType" column="point_type"/>
+        <result property="pointBuildId" column="point_build_id"/>
+        <result property="pointBuildName" column="point_build_name"/>
+        <result property="pointFloor" column="point_floor"/>
+        <result property="pointRegionId" column="point_region_id"/>
+        <result property="pointRegionName" column="point_region_name"/>
+        <result property="pointImageId" column="point_image_id"/>
+        <result property="devicetype" column="devicetype"/>
+        <result property="deviceaddress" column="deviceaddress"/>
+        <result property="devicenum" column="devicenum"/>
+        <result property="produceDate" column="produce_date"/>
+        <result property="expirationdate" column="expirationdate"/>
+        <result property="isremoved" column="isRemoved"/>
+        <result property="isscrap" column="isScrap"/>
+        <result property="createUserId" column="create_user_id"/>
+        <result property="createUserName" column="create_user_name"/>
+        <result property="createtime" column="createtime"/>
+        <result property="modifyUserId" column="modify_user_id"/>
+        <result property="modifyUserName" column="modify_user_name"/>
+        <result property="modifytime" column="modifyTime"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+
+
+    <select id="findPointByOrgBuildId" >
+        select * from sf_inspection_point
+        <where>
+            <if test="query.orgId != null and query.orgId != ''">
+               and org_id = #{query.orgId}
+            </if>
+            <if test="query.pointBuildId != null and query.pointBuildId != ''">
+               and point_build_id = #{query.pointBuildId}
+            </if>
+        </where>
+    </select>
+    <update id="bindingQRCode">
+      update sf_inspection_point 
+               set point_qr_code=#{save.pointQrCode},
+               binding=#{save.binding} 
+               where id=#{save.id}
+    </update>
+    <select id="findInspectionPoint" resultType="int">
+     select count(0) from sf_inspection_point where id=#{id} and point_qr_code=#{pointQrCode}
+    </select>
+</mapper>

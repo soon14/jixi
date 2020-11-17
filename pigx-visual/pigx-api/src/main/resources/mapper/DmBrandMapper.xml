@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ~ ~ Copyright (c) 2018-2025, lengleng All rights reserved. ~ ~ Redistribution 
+	and use in source and binary forms, with or without ~ modification, are permitted 
+	provided that the following conditions are met: ~ ~ Redistributions of source 
+	code must retain the above copyright notice, ~ this list of conditions and 
+	the following disclaimer. ~ Redistributions in binary form must reproduce 
+	the above copyright ~ notice, this list of conditions and the following disclaimer 
+	in the ~ documentation and/or other materials provided with the distribution. 
+	~ Neither the name of the pig4cloud.com developer nor the names of its ~ 
+	contributors may be used to endorse or promote products derived from ~ this 
+	software without specific prior written permission. ~ Author: lengleng (wangiegie@gmail.com) 
+	~ -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.pig4cloud.pigx.api.device.mapper.DmBrandMapper">
+
+	<resultMap id="dmBrandMap"
+		type="com.pig4cloud.pigx.api.device.entity.DmBrand">
+		<id property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="name" column="name" />
+		<result property="factorId" column="factor_id" />
+		<result property="remark" column="remark" />
+		<result property="createUserId" column="create_user_id" />
+		<result property="createUser" column="create_user" />
+		<result property="createTime" column="create_time" />
+		<result property="updateUserId" column="update_user_id" />
+		<result property="updateUser" column="update_user"/>
+		<result property="updateTime" column="update_time" />
+	</resultMap>
+	<resultMap id="dmBrandVOMap"
+		type="com.pig4cloud.pigx.api.device.vo.DmBrandVO">
+		<id property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="name" column="name" />
+		<result property="factorId" column="factor_id" />
+		<result property="factorName" column="factor_name" />
+		<result property="createUserId" column="create_user_id" />
+		<result property="createUser" column="create_user" />
+		<result property="createTime" column="create_time" />
+		<result property="updateUserId" column="update_user_id" />
+		<result property="updateUser" column="update_user"/>
+		<result property="updateTime" column="update_time" />
+	</resultMap>
+	<select id="getSelectFactorId" resultMap="dmBrandMap">
+		SELECT
+			* 
+		FROM
+			dm_brand 
+		<where>
+		<if test="factorId != null and factorId != ''">
+			and factor_id = #{factorId}
+			</if>
+			</where>
+	</select>
+	<select id="getBrandList" resultMap="dmBrandVOMap">
+		SELECT
+			d.*,
+			f.NAME AS factor_name 
+		FROM
+			dm_brand d,
+			dm_manufactor f 
+		<where>
+			d.factor_id = f.id
+			<if test="query.code != null and query.code != ''">
+				AND d.code like CONCAT('%', #{query.code}, '%')
+			</if>
+			<if test="query.name != null and query.name != ''">
+				AND d.name like CONCAT('%', #{query.name}, '%')
+			</if>
+			<if test="query.factorId != null and query.factorId != ''">
+				AND d.factor_id = #{query.factorId}
+			</if>
+		</where>
+		ORDER BY d.create_time DESC
+	</select>
+
+</mapper>

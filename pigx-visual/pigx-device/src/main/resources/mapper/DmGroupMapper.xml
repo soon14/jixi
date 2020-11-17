@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ~ ~ Copyright (c) 2018-2025, lengleng All rights reserved. ~ ~ Redistribution 
+	and use in source and binary forms, with or without ~ modification, are permitted 
+	provided that the following conditions are met: ~ ~ Redistributions of source 
+	code must retain the above copyright notice, ~ this list of conditions and 
+	the following disclaimer. ~ Redistributions in binary form must reproduce 
+	the above copyright ~ notice, this list of conditions and the following disclaimer 
+	in the ~ documentation and/or other materials provided with the distribution. 
+	~ Neither the name of the pig4cloud.com developer nor the names of its ~ 
+	contributors may be used to endorse or promote products derived from ~ this 
+	software without specific prior written permission. ~ Author: lengleng (wangiegie@gmail.com) 
+	~ -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.pig4cloud.pigx.device.generator.mapper.DmGroupMapper">
+
+	<resultMap id="dmGroupMap"
+		type="com.pig4cloud.pigx.device.generator.entity.DmGroup">
+		<id property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="name" column="name" />
+		<result property="parentId" column="parent_id" />
+		<result property="remark" column="remark" />
+		<result property="createUserId" column="create_user_id" />
+		<result property="createTime" column="create_time" />
+		<result property="updateUserId" column="update_user_id" />
+		<result property="updateTime" column="update_time" />
+	</resultMap>
+
+<resultMap id="dmGroupDTOMap"
+		type="com.pig4cloud.pigx.device.generator.dto.DmGroupDTO">
+		<id property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="name" column="name" />
+		<result property="parentId" column="parent_id" />
+		<result property="remark" column="remark" />
+		<result property="createUserId" column="create_user_id" />
+		<result property="createUser" column="create_user"/>
+		<result property="createTime" column="create_time" />
+		<result property="updateUserId" column="update_user_id" />
+		<result property="updateUser" column="update_user"/>
+		<result property="updateTime" column="update_time" />
+	</resultMap>
+
+<resultMap id="dmGroupVoMap"
+		type="com.pig4cloud.pigx.device.generator.vo.DmGroupVo">
+		<id property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="name" column="name" />
+		<result property="parentId" column="parent_id" />
+		<result property="remark" column="remark" />
+		<result property="createUserId" column="create_user_id" />
+		<result property="createUser" column="create_user"/>
+		<result property="createTime" column="create_time" />
+		<result property="updateUserId" column="update_user_id" />
+		<result property="updateUser" column="update_user"/>
+		<result property="updateTime" column="update_time" />
+		<result property="parentName" column="parent_name" />
+	</resultMap>
+	<select id="getSelectParentId" resultMap="dmGroupDTOMap">
+		SELECT
+			* 
+		FROM
+			dm_group 
+		WHERE
+			parent_id = #{parentId}
+	</select>
+	
+	<select id="getParentGroup" resultMap="dmGroupMap">
+		select id,
+             code,
+			 name,
+			 parent_id,
+			 remark,
+			 create_user_id,
+			 create_time,
+			 update_user_id,
+			 update_time 
+			 from dm_group
+		WHERE
+			  id = #{parentId}
+	</select>
+	
+	<select id="getGroupList" resultMap="dmGroupVoMap">
+			select g.id,
+                   g.code,
+				 g.name,
+				 g.parent_id,
+				 g.remark,
+				 g.create_user_id,
+				 g.create_time,
+				 g.update_user_id,
+				 g.update_time,
+				 pg.name as parent_name
+			 from dm_group g
+			 left join dm_group pg on g.parent_id=pg.id
+		<where>
+		     <if test="query.id != null and query.id != ''">
+				and g.id = #{query.id}
+			</if>
+			  <if test="query.name != null and query.name != ''">
+				and g.name LIKE CONCAT('%',#{query.name},'%')
+			</if>
+			</where>
+	</select>
+</mapper>

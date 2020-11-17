@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ~ ~ Copyright (c) 2018-2025, lengleng All rights reserved. ~ ~ Redistribution 
+	and use in source and binary forms, with or without ~ modification, are permitted 
+	provided that the following conditions are met: ~ ~ Redistributions of source 
+	code must retain the above copyright notice, ~ this list of conditions and 
+	the following disclaimer. ~ Redistributions in binary form must reproduce 
+	the above copyright ~ notice, this list of conditions and the following disclaimer 
+	in the ~ documentation and/or other materials provided with the distribution. 
+	~ Neither the name of the pig4cloud.com developer nor the names of its ~ 
+	contributors may be used to endorse or promote products derived from ~ this 
+	software without specific prior written pefindDeviceDataByIdrmission. ~ Author: lengleng (wangiegie@gmail.com)
+	~ -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.pig4cloud.pigx.device.generator.mapper.DmDeviceFunctionMapper">
+
+	<resultMap id="dmDeviceFunctionMap"
+		type="com.pig4cloud.pigx.device.generator.entity.DmDeviceFunction">
+		<id property="devId" column="dev_id" />
+		<result property="funcId" column="func_id" />
+		<result property="funcType" column="func_type" />
+		<result property="factorId" column="factor_id" />
+		<result property="brandId" column="brand_id" />
+		<result property="prodId" column="prod_id" />
+		<result property="funcType" column="func_type" />
+		<result property="eventType" column="event_type" />
+		<result property="dataType" column="data_type" />
+		<result property="unitId" column="unit_id" />
+		<result property="upperLimit" column="upper_limit" />
+		<result property="lowerLimit" column="lower_limit" />
+		<result property="volumeSwitch" column="volume_switch" />
+		<result property="remark" column="remark" />
+		<result property="funcCode" column="func_code"/>
+	</resultMap>
+	<resultMap id="dmDeviceFunctionVoMap"
+		type="com.pig4cloud.pigx.device.generator.vo.DmDeviceFunctionVo">
+		<id property="devId" column="dev_id" />
+		<result property="funcId" column="func_id" />
+		<result property="funcType" column="func_type" />
+		<result property="factorId" column="factor_id" />
+		<result property="brandId" column="brand_id" />
+		<result property="prodId" column="prod_id" />
+		<result property="funcType" column="func_type" />
+		<result property="eventType" column="event_type" />
+		<result property="dataType" column="data_type" />
+		<result property="unitId" column="unit_id" />
+		<result property="upperLimit" column="upper_limit" />
+		<result property="lowerLimit" column="lower_limit" />
+		<result property="volumeSwitch" column="volume_switch" />
+		<result property="funcName" column="func_name" />
+		<result property="funcCode" column="func_code" />
+		<result property="factorName" column="factor_name" />
+		<result property="brandName" column="brand_name" />
+		<result property="prodName" column="prod_name" />
+		<result property="deviceName" column="device_name" />
+		<result property="remark" column="remark" />
+	</resultMap>
+	<select id="getDeviceFunctionList"
+		resultMap="dmDeviceFunctionVoMap">
+		select df.dev_id,
+		df.func_id,
+		df.type_id,
+		df.factor_id,
+		df.brand_id,
+		df.prod_id,
+		df.func_type,
+		df.data_type,
+		df.event_type,
+		df.unit_id,
+		df.upper_limit,
+		df.lower_limit,
+		df.volume_switch,
+		df.remark,
+		f.code as func_code,
+		f.name as func_name,
+		m.name as factor_name,
+		b.name as brand_name,
+		p.name as prod_name,
+		d.name as device_name
+		from dm_device_function df
+		left join dm_function f on df.func_id=f.id
+		left join dm_manufactor m on df.factor_id=m.id
+		left join dm_brand b on df.brand_id=b.id
+		left join dm_product p on df.prod_id=p.id
+		left join dm_device d on df.dev_id = d.id
+		<where>
+			<if test="query.devId != null and query.devId != ''">
+				and df.dev_id = #{query.devId}
+			</if>
+			<if test="query.prodId != null and query.prodId != ''">
+				and df.prod_id = #{query.prodId}
+			</if>
+		</where>
+		ORDER BY f.code ASC
+	</select>
+	<delete id="deleteDeviceFunction">
+		delete from dm_device_function where dev_id=#{devId}
+	</delete>
+	<update id="updateDeviceFunctionInfo">
+		UPDATE dm_device_function SET type_id = #{entity.typeId},
+		factor_id = #{entity.factorId},
+		brand_id = #{entity.brandId},
+		prod_id = #{entity.prodId},
+		func_type = #{entity.funcType},
+		data_type = #{entity.dataType},
+		event_type = #{entity.eventType},
+		unit_id = #{entity.unitId},
+		upper_limit = #{entity.upperLimit},
+		lower_limit = #{entity.lowerLimit},
+		volume_switch = #{entity.volumeSwitch},
+		remark = #{entity.remark}
+		WHERE dev_id = #{entity.devId} AND func_id = #{entity.funcId}
+	</update>
+
+
+	<select id="findDeviceDataById" resultType="com.pig4cloud.pigx.device.generator.entity.DmDeviceFunction">
+		select d.*,e.name from dm_device_function d left join dm_function e on d.func_id = e.id
+		where d.dev_id = #{devId}
+	</select>
+</mapper>

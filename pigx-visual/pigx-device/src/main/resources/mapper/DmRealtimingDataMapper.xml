@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pig4cloud.pigx.device.generator.mapper.DmRealtimingDataMapper">
+
+    <resultMap id="BaseResultMap" type="com.pig4cloud.pigx.device.generator.entity.DmRealtimingData">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="device_name" property="deviceName" jdbcType="VARCHAR"/>
+        <result column="device_address" property="deviceAddress" jdbcType="VARCHAR"/>
+        <result column="device_type" property="deviceType" jdbcType="VARCHAR"/>
+        <result column="device_code" property="deviceCode" jdbcType="VARCHAR"/>
+        <result column="larm_info" property="larmInfo" jdbcType="VARCHAR"/>
+        <result column="send_time" property="sendTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap id="ResultMapWithBLOBs" type="com.pig4cloud.pigx.device.generator.entity.DmRealtimingData"
+               extends="BaseResultMap">
+        <result column="realtimingdata" property="realtimingdata" jdbcType="LONGVARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    id, device_name, device_address, device_type, device_code, larm_info, send_time
+    </sql>
+
+    <sql id="Blob_Column_List">
+    realtimingdata
+    </sql>
+
+    <select id="selectLast" resultType="com.pig4cloud.pigx.device.generator.entity.DmRealtimingData">
+        SELECT * FROM dm_realtimingdata
+        where device_code = #{deviceCode}
+        ORDER BY send_time DESC LIMIT 0,1
+    </select>
+
+</mapper>

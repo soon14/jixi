@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~
+  ~      Copyright (c) 2018-2025, lengleng All rights reserved.
+  ~
+  ~  Redistribution and use in source and binary forms, with or without
+  ~  modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice,
+  ~  this list of conditions and the following disclaimer.
+  ~  Redistributions in binary form must reproduce the above copyright
+  ~  notice, this list of conditions and the following disclaimer in the
+  ~  documentation and/or other materials provided with the distribution.
+  ~  Neither the name of the pig4cloud.com developer nor the names of its
+  ~  contributors may be used to endorse or promote products derived from
+  ~  this software without specific prior written permission.
+  ~  Author: lengleng (wangiegie@gmail.com)
+  ~
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pigx.api.user.mapper.BsBuildinfoMapper">
+
+  <resultMap id="bsBuildinfoMap" type="com.pig4cloud.pigx.api.user.entity.BsBuildinfo">
+                  <id property="buildId" column="build_id"/>
+                <result property="deptId" column="dept_id"/>
+                <result property="deptName" column="dept_name" />
+                <result property="typeId" column="type_id"/>
+                <result property="networkUnitId" column="network_unit_id"/>
+                <result property="code" column="code"/>
+                <result property="name" column="name"/>
+                <result property="address" column="address"/>
+                <result property="constructionDate" column="construction_date"/>
+                <result property="usefulness" column="usefulness"/>
+                <result property="fireRating" column="fire_rating"/>
+                <result property="refractoryRating" column="refractory_rating"/>
+                <result property="structureType" column="structure_type"/>
+                <result property="height" column="height"/>
+                <result property="buildingArea" column="building_area"/>
+                <result property="floorArea" column="floor_area"/>
+                <result property="standardFloorArea" column="standard_floor_area"/>
+                <result property="overgroundAmount" column="overground_amount"/>
+                <result property="overgroundArea" column="overground_area"/>
+                <result property="undergroundAmount" column="underground_amount"/>
+                <result property="undergroundArea" column="underground_area"/>
+                <result property="tunnelHeight" column="tunnel_height"/>
+                <result property="tunnelLength" column="tunnel_length"/>
+                <result property="controlRoomPosition" column="control_room_position"/>
+                <result property="hideoutFloorAmount" column="hideout_floor_amount"/>
+                <result property="hideoutArea" column="hideout_area"/>
+                <result property="hideoutPosition" column="hideout_position"/>
+                <result property="exitAmount" column="exit_amount"/>
+                <result property="exitPosition" column="exit_position"/>
+                <result property="exitStyle" column="exit_style"/>
+                <result property="elevatorAmount" column="elevator_amount"/>
+                <result property="elevatorBearing" column="elevator_bearing"/>
+                <result property="normalWorkerAmount" column="normal_worker_amount"/>
+                <result property="maxWorkerAmount" column="max_worker_amount"/>
+                <result property="storageName" column="storage_name"/>
+                <result property="storageAmount" column="storage_amount"/>
+                <result property="storageProperty" column="storage_property"/>
+                <result property="storageForm" column="storage_form"/>
+                <result property="storeSpace" column="store_space"/>
+                <result property="material" column="material"/>
+                <result property="product" column="product"/>
+                <result property="nearbyCase" column="nearby_case"/>
+                <result property="imageId" column="image_id"/>
+                <result property="verticalViewImageId" column="vertical_view_image_id"/>
+                <result property="devicePlanViewImageId" column="device_plan_view_image_id"/>
+                <result property="planViewImageId" column="plan_view_image_id"/>
+                <result property="description" column="description"/>
+                <result property="remark" column="remark"/>
+                <result property="modifyTime" column="modify_time"/>
+                <result property="inure" column="inure"/>
+                <result property="isRemoved" column="is_removed"/>
+            </resultMap>
+    <select id="getBuildinfoVosPage" resultMap="bsBuildinfoMap">
+        SELECT
+            build.build_id,
+            build.dept_id,
+            build.type_id,
+            build.network_unit_id,
+            build.CODE,
+            build.NAME,
+            build.address,
+            build.construction_date,
+            build.usefulness,
+            build.fire_rating,
+            build.refractory_rating,
+            build.structure_type,
+            build.height,
+            build.building_area,
+            build.floor_area,
+            build.standard_floor_area,
+            build.overground_amount,
+            build.overground_area,
+            build.underground_amount,
+            build.underground_area,
+            build.tunnel_height,
+            build.tunnel_length,
+            build.control_room_position,
+            build.hideout_floor_amount,
+            build.hideout_area,
+            build.hideout_position,
+            build.exit_amount,
+            build.exit_position,
+            build.exit_style,
+            build.elevator_amount,
+            build.elevator_bearing,
+            build.normal_worker_amount,
+            build.max_worker_amount,
+            build.storage_name,
+            build.storage_amount,
+            build.storage_property,
+            build.storage_form,
+            build.store_space,
+            build.material,
+            build.product,
+            build.nearby_case,
+            build.image_id,
+            build.vertical_view_image_id,
+            build.device_plan_view_image_id,
+            build.plan_view_image_id,
+            build.description,
+            build.remark,
+            build.create_time,
+            build.modify_time,
+            build.inure,
+            build.is_removed,
+            dept.name deptName
+        FROM
+            bs_buildinfo build
+            LEFT JOIN sys_dept dept ON build.dept_id = dept.dept_id
+        <where>
+            <if test="query.typeId != null and query.typeId != ''">
+                and `build`.type_id = #{query.typeId}
+            </if>
+            <if test="query.usefulness != null and query.usefulness != ''">
+                and `build`.usefulness = #{query.usefulness}
+            </if>
+            <if test="query.fireRating != null and query.fireRating != ''">
+                and `build`.fire_rating = #{query.fireRating}
+            </if>
+            <if test="query.refractoryRating != null and query.refractoryRating != ''">
+                and `build`.refractory_rating = #{query.refractoryRating}
+            </if>
+            <if test="query.structureType != null and query.structureType != ''">
+                and `build`.structure_type = #{query.structureType}
+            </if>
+             <if test="unitIds.size() > 0">
+					     and build.network_unit_id in
+							 <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+							  #{unitId}
+							 </foreach>
+					   </if>
+        </where>
+        ORDER BY build.create_time DESC
+    </select>
+    <select id="selectBuild" resultMap="bsBuildinfoMap">
+        SELECT  build_id,
+			  name
+        FROM bs_buildinfo
+        <where>
+        <if test="networkUnitId != null and networkUnitId != ''">
+				and network_unit_id = #{networkUnitId}
+			</if>
+        </where>
+        ORDER BY name ASC
+    </select>
+            
+</mapper>

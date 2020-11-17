@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~
+  ~      Copyright (c) 2018-2025, lengleng All rights reserved.
+  ~
+  ~  Redistribution and use in source and binary forms, with or without
+  ~  modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice,
+  ~  this list of conditions and the following disclaimer.
+  ~  Redistributions in binary form must reproduce the above copyright
+  ~  notice, this list of conditions and the following disclaimer in the
+  ~  documentation and/or other materials provided with the distribution.
+  ~  Neither the name of the pig4cloud.com developer nor the names of its
+  ~  contributors may be used to endorse or promote products derived from
+  ~  this software without specific prior written permission.
+  ~  Author: lengleng (wangiegie@gmail.com)
+  ~
+  -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pig4cloud.pigx.api.user.mapper.SysDeptMapper">
+
+    <resultMap id="sysDeptVOMap" type="com.pig4cloud.pigx.api.user.vo.SysDeptVO">
+        <id property="deptId" column="dept_id"/>
+        <result property="typeId" column="type_id"/>
+        <result property="typeName" column="type_name"/>
+        <result property="orgType" column="org_type" />
+        <result property="orgTypeName" column="org_type_name"/>
+        <result property="centerId" column="center_id" />
+        <result property="centerName" column="center_name" />
+        <result property="code" column="code" />
+        <result property="name" column="name" />
+        <result property="email" column="email" />
+        <result property="phoneNum" column="phone_num" />
+        <result property="workerAmount" column="worker_amount" />
+        <result property="regionProvince" column="region_province" />
+        <result property="regionCity" column="region_city" />
+        <result property="regionArea" column="region_area" />
+        <result property="address" column="address" />
+        <result property="grade" column="grade" />
+        <result property="scope" column="scope" />
+        <result property="timeOfContract" column="time_of_contract" />
+        <result property="timeOfContractOver" column="time_of_contract_over" />
+        <result property="startUsingTime" column="start_using_time" />
+        <result property="redundantBackup" column="redundant_backup" />
+        <result property="connectedState" column="connected_state" />
+        <result property="zipCode" column="zip_code" />
+        <result property="fireControlTel" column="fire_control_tel" />
+        <result property="foundingDate" column="founding_date" />
+        <result property="ownership" column="ownership" />
+        <result property="fixedAsset" column="fixed_asset" />
+        <result property="occupiedArea" column="occupied_area" />
+        <result property="buildingArea" column="building_area" />
+        <result property="joineddateDate" column="joineddate_date" />
+        <result property="imageId" column="image_id" />
+        <result property="coordinate" column="coordinate" />
+        <result property="description" column="description" />
+        <result property="remark" column="remark" />
+        <result property="appendTime" column="append_time" />
+        <result property="appendIp" column="append_ip" />
+        <result property="appendMac" column="append_mac" />
+        <result property="appendUserId" column="append_user_id" />
+        <result property="bugCount" column="bug_count" />
+        <result property="qoqAlarmValue" column="qoq_alarm_value" />
+        <result property="yoyAlarmValue" column="yoy_alarm_value" />
+        <result property="alarmNum" column="alarm_num" />
+        <result property="alarmInfo" column="alarm_info" />
+        <result property="hrHapppenTime" column="hr_happen_time" />
+        <result property="hrRiskLevel" column="hr_risk_level" />
+        <result property="hrReason" column="hr_reason" />
+        <result property="isPush" column="is_push" />
+        <result property="logoId" column="logo_id" />
+        <result property="sort" column="sort" />
+        <result property="createTime" column="create_time" />
+        <result property="updateTime" column="update_time" />
+        <result property="inure" column="inure" />
+        <result property="delFlag" column="del_flag" />
+        <result property="parentId" column="parent_id" />
+        <result property="parentName" column="parent_name"/>
+        <result property="tenantId" column="tenant_id" />
+    </resultMap>
+    <select id="getVOById" resultMap="sysDeptVOMap">
+        SELECT
+            d.dept_id,
+            d.type_id,
+            di.label typeName,
+            d.org_type,
+            ot.NAME orgTypeName,
+            d.center_id,
+            d.CODE,
+            d.NAME,
+            d.email,
+            d.phone_num,
+            d.worker_amount,
+            d.region_province,
+            d.region_city,
+            d.region_area,
+            d.address,
+            d.grade,
+            d.scope,
+            d.time_of_contract,
+            d.time_of_contract_over,
+            d.start_using_time,
+            d.redundant_backup,
+            d.connected_state,
+            d.zip_code,
+            d.fire_control_tel,
+            d.founding_date,
+            d.ownership,
+            d.fixed_asset,
+            d.occupied_area,
+            d.building_area,
+            d.joineddate_date,
+            d.image_id,
+            d.coordinate,
+            d.description,
+            d.remark,
+            d.append_time,
+            d.append_ip,
+            d.append_mac,
+            d.append_user_id,
+            d.bug_count,
+            d.qoq_alarm_value,
+            d.yoy_alarm_value,
+            d.alarm_num,
+            d.alarm_info,
+            d.hr_happen_time,
+            d.hr_risk_level,
+            d.hr_reason,
+            d.is_push,
+            d.logo_id,
+            d.sort,
+            d.create_time,
+            d.update_time,
+            d.inure,
+            d.del_flag,
+            d.parent_id,
+            d.tenant_id 
+        FROM
+            sys_dept d
+            LEFT JOIN sys_org_type ot ON d.org_type = ot.type_id
+            LEFT JOIN sys_dict_item di ON d.type_id = di.`value`  AND di.type='buildings_classification'
+        WHERE d.dept_id = #{deptId}    
+    </select>
+	<select id="getSelect" resultMap="sysDeptVOMap">
+		SELECT
+			d.dept_id AS deptId,
+			d.`name` 
+		FROM
+			sys_dept d 
+	</select>
+    <select id="queryMaintenanceCompany" resultType="com.pig4cloud.pigx.api.user.entity.SysDept">
+        SELECT distinct dept.name,dept.phone_num FROM sys_dept dept
+               LEFT JOIN bs_network_org_rela rela ON dept.dept_id=rela.org_id
+               <where>
+                   <if test="orgType!=null and orgType!=''">
+                       and rela.org_type_code=#{orgType}
+                   </if>
+                   <if test="unitIds.size() > 0">
+                   and rela.unit_id in
+                   <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+                       #{unitId}
+                   </foreach>
+                   </if>
+               </where>
+    </select>
+
+</mapper>

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~
+  ~      Copyright (c) 2018-2025, lengleng All rights reserved.
+  ~
+  ~  Redistribution and use in source and binary forms, with or without
+  ~  modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice,
+  ~  this list of conditions and the following disclaimer.
+  ~  Redistributions in binary form must reproduce the above copyright
+  ~  notice, this list of conditions and the following disclaimer in the
+  ~  documentation and/or other materials provided with the distribution.
+  ~  Neither the name of the pig4cloud.com developer nor the names of its
+  ~  contributors may be used to endorse or promote products derived from
+  ~  this software without specific prior written permission.
+  ~  Author: lengleng (wangiegie@gmail.com)
+  ~
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pigx.api.user.mapper.BsNetworkingUnitMapper">
+
+    <resultMap id="bsNetworkingUnitMap" type="com.pig4cloud.pigx.api.user.entity.BsNetworkingUnit">
+        <id property="unitId" column="unit_id"/>
+        <result property="name" column="name"/>
+        <result property="orgType" column="org_type"/>
+        <result property="orgId" column="org_id"/>
+        <result property="provId" column="prov_id"/>
+        <result property="cityId" column="city_id"/>
+        <result property="areaId" column="area_id"/>
+        <result property="address" column="address"/>
+        <result property="contacts" column="contacts"/>
+        <result property="telephone" column="telephone"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createUserId" column="create_user_id"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateUserId" column="update_user_id"/>
+    </resultMap>
+    <resultMap id="bsNetworkingUnitVoMap" type="com.pig4cloud.pigx.api.user.vo.NetworkingUnitVo">
+        <id property="unitId" column="unit_id"/>
+        <result property="name" column="name"/>
+        <result property="orgType" column="org_type"/>
+        <result property="orgId" column="org_id"/>
+        <result property="provId" column="prov_id"/>
+        <result property="cityId" column="city_id"/>
+        <result property="areaId" column="area_id"/>
+        <result property="address" column="address"/>
+        <result property="contacts" column="contacts"/>
+        <result property="telephone" column="telephone"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createUserId" column="create_user_id"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateUserId" column="update_user_id"/>
+        <result property="longitude" column="longitude"/>
+        <result property="latitude" column="latitude"/>
+        <result property="areaCode" column="area_code"/>
+        <result property="areaName" column="area_name"/>
+        <result property="provName" column="prov_name"/>
+        <result property="cityName" column="city_name"/>
+        <result property="orgTypeName" column="org_type_name"/>
+    </resultMap>
+    <select id="getUnitById" resultMap="bsNetworkingUnitVoMap">
+        select bsn.unit_id,
+        bsn.name,
+        bsn.org_type,
+        bsn.org_id,
+        bsn.prov_id,
+        bsn.city_id,
+        bsn.area_id,
+        bsn.address,
+        bsn.contacts,
+        bsn.telephone,
+        bsn.create_time,
+        bsn.create_user_id,
+        bsn.update_time,
+        bsn.update_user_id,
+        bsn.longitude,
+        bsn.latitude,
+        bsa.code as area_code,
+        bsa.name as area_name,
+        syso.name as org_type_name
+        from bs_networking_unit bsn
+        left join bs_area bsa on bsn.area_id=bsa.area_id
+        left join sys_org_type syso on bsn.org_type=syso.type_id
+        <where>
+            <if test="unitId != null and unitId != ''">
+                and unit_id=#{unitId}
+            </if>
+        </where>
+    </select>
+    <select id="getUnitByAreaId" resultMap="bsNetworkingUnitMap">
+        select unit_id,
+        name
+        from bs_networking_unit
+        <where>
+            and area_id=#{areaId}
+            <if test="unitIds.size() > 0">
+                and unit_id in
+                <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+                    #{unitId}
+                </foreach>
+            </if>
+        </where>
+        order by name asc
+    </select>
+    <select id="getUnitIdByUnitId" resultType="String">
+        select unit_id
+        from bs_network_org_rela
+        <where>
+            <if test="orgId != null and orgId != ''">
+                and org_id=#{orgId}
+            </if>
+        </where>
+    </select>
+    <select id="getUnitIdByAreaId" resultType="String">
+        select unit_id
+        from bs_networking_unit
+        <where>
+            <if test="areaId != null and areaId != ''">
+                and area_id=#{areaId}
+            </if>
+            <if test="unitIds.size() > 0">
+                and unit_id in
+                <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+                    #{unitId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    <select id="selectUnitInfo" resultMap="bsNetworkingUnitMap">
+        SELECT
+        unit_id,
+        NAME,
+        org_type,
+        org_id,
+        prov_id,
+        city_id,
+        area_id,
+        address,
+        contacts,
+        telephone,
+        create_time,
+        create_user_id,
+        update_time,
+        update_user_id
+        FROM
+        bs_networking_unit
+        <where>
+            <if test="unitIds.size() > 0">
+                and unit_id in
+                <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+                    #{unitId}
+                </foreach>
+            </if>
+        </where>
+        order by name asc
+    </select>
+    <select id="getBsNetworkingUnitPage" resultMap="bsNetworkingUnitVoMap">
+        SELECT net.unit_id,
+        net.name,
+        net.org_type,
+        net.org_id,
+        net.prov_id,
+        pro.name AS prov_name,
+        net.city_id,
+        city.name AS city_name,
+        net.area_id,
+        bsArea.name AS area_name,
+        net.address,
+        net.contacts,
+        net.telephone,
+        net.create_time,
+        net.create_user_id,
+        net.update_time,
+        net.update_user_id FROM bs_networking_unit net
+        LEFT JOIN bs_province pro ON net.prov_id=pro.code
+        LEFT JOIN bs_city city ON net.city_id=city.code
+        LEFT JOIN bs_area bsArea ON net.area_id=bsArea.code
+        <where>
+            <if test="unitIds.size() > 0">
+                and net.unit_id in
+                <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+                    #{unitId}
+                </foreach>
+            </if>
+        </where>
+
+    </select>
+    <select id="getBsNetworkingUnitList" resultType="com.pig4cloud.pigx.api.user.entity.BsNetworkingUnit">
+        SELECT unit_id,longitude,latitude,name FROM bs_networking_unit
+        <where>
+            <if test="unitIds.size() > 0">
+                and unit_id in
+                <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+                    #{unitId}
+                </foreach>
+            </if>
+            <if test="name != null and name != ''">
+                and name like CONCAT('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="findNetWorkDetail" resultType="map">
+		SELECT
+            bnu.address,
+            bnu. NAME AS NetName,
+            bnu.telephone AS AQPhone,
+            bnu.contacts AS AQUser,
+            bor.org_name AS XFName,
+            sd.`name` AS WBName,
+            sd.phone_num AS FZPhone
+        FROM
+	        bs_networking_unit bnu
+        LEFT JOIN bs_network_org_rela bor ON bnu.unit_id = bor.unit_id AND bor.org_type_code = 'xfd'
+        LEFT JOIN bs_network_org_rela bo ON bnu.unit_id = bo.unit_id AND bo.org_type_code = 'wbgs'
+        LEFT JOIN sys_dept sd on bo.org_id=sd.dept_id
+        WHERE
+	         bnu.unit_id = #{unitId}
+	</select>
+</mapper>

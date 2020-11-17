@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ~ ~ Copyright (c) 2018-2025, lengleng All rights reserved. ~ ~ Redistribution 
+	and use in source and binary forms, with or without ~ modification, are permitted 
+	provided that the following conditions are met: ~ ~ Redistributions of source 
+	code must retain the above copyright notice, ~ this list of conditions and 
+	the following disclaimer. ~ Redistributions in binary form must reproduce 
+	the above copyright ~ notice, this list of conditions and the following disclaimer 
+	in the ~ documentation and/or other materials provided with the distribution. 
+	~ Neither the name of the pig4cloud.com developer nor the names of its ~ 
+	contributors may be used to endoFwritten permission. ~ Author: lengleng (wangiegie@gmail.com)
+	~ -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.pig4cloud.pigx.admin.mapper.BsCountyMapper">
+
+	<resultMap id="bsCountyMap"
+		type="com.pig4cloud.pigx.admin.api.entity.BsCounty">
+		 <id property="countyId" column="county_id"/>
+                        <result property="code" column="code"/>
+                        <result property="name" column="name"/>
+                        <result property="deptId" column="dept_id"/>
+                        <result property="deptName" column="dept_name"/>
+                        <result property="buildId" column="build_id"/>
+                        <result property="buildName" column="build_name"/>
+                        <result property="backgroundImage" column="background_image"/>
+                        <result property="area" column="area"/>
+                        <result property="refractoryRating" column="refractory_rating"/>
+                        <result property="position" column="position"/>
+                        <result property="usefulness" column="usefulness"/>
+                        <result property="deviceStatus" column="device_status"/>
+                        <result property="managerName" column="manager_name"/>
+                        <result property="managerIdNum" column="manager_id_num"/>
+                        <result property="managerPhone" column="manager_phone"/>
+                        <result property="reason" column="reason"/>
+                        <result property="signStatus" column="sign_status"/>
+                        <result property="dangerSource" column="danger_source"/>
+                        <result property="measure" column="measure"/>
+                        <result property="description" column="description"/>
+                        <result property="remark" column="remark"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="modifyTime" column="modify_time"/>
+                        <result property="inure" column="inure"/>
+                        <result property="isRemoved" column="is_removed"/>
+	</resultMap>
+
+	<select id="getCountyByBuildIdPage">
+		SELECT
+		c.county_id,
+		c.CODE,
+		c.NAME,
+		c.dept_id,
+		c.build_id,
+		c.background_image,
+		c.area,
+		c.refractory_rating,
+		c.position,
+		c.usefulness,
+		c.device_status,
+		c.manager_name,
+		c.manager_id_num,
+		c.manager_phone,
+		c.reason,
+		c.sign_status,
+		c.danger_source,
+		c.measure,
+		c.description,
+		c.remark,
+		c.modify_time,
+		c.inure,
+		c.is_removed,
+		d.NAME AS deptName,
+		b.NAME AS buildName
+		FROM
+		bs_county c
+		LEFT JOIN sys_dept d ON c.dept_id = d.dept_id
+		LEFT JOIN bs_buildinfo b ON c.build_id = b.build_id
+		WHERE c.build_id = #{buildId}
+		ORDER BY c.create_time
+	</select>
+
+	<update id="deleteCountyByBuildId">
+		delete from bs_county where build_id = #{buildId}
+	</update>
+
+	<select id="selectCounty" resultMap="bsCountyMap">
+		select county_id,name
+		from bs_county
+		<where>
+			<if test="buildId != null and buildId != ''">
+				and build_id=#{buildId}
+			</if>
+		</where>
+		ORDER BY name ASC
+	</select>
+</mapper>

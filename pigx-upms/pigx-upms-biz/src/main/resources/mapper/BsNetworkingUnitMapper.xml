@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~
+  ~      Copyright (c) 2018-2025, lengleng All rights reserved.
+  ~
+  ~  Redistribution and use in source and binary forms, with or without
+  ~  modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice,
+  ~  this list of conditions and the following disclaimer.
+  ~  Redistributions in binary form must reproduce the above copyright
+  ~  notice, this list of conditions and the following disclaimer in the
+  ~  documentation and/or other materials provided with the distribution.
+  ~  Neither the name of the pig4cloud.com developer nor the names of its
+  ~  contributors may be used to endorse or promote products derived from
+  ~  this software without specific prior written permission.
+  ~  Author: lengleng (wangiegie@gmail.com)
+  ~
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pigx.admin.mapper.BsNetworkingUnitMapper">
+
+  <resultMap id="bsNetworkingUnitMap" type="com.pig4cloud.pigx.admin.api.entity.BsNetworkingUnit">
+                  <id property="unitId" column="unit_id"/>
+                        <result property="name" column="name"/>
+                        <result property="orgType" column="org_type"/>
+                        <result property="orgId" column="org_id"/>
+                        <result property="provId" column="prov_id"/>
+                        <result property="cityId" column="city_id"/>
+                        <result property="areaId" column="area_id"/>
+                        <result property="address" column="address"/>
+                        <result property="contacts" column="contacts"/>
+                        <result property="telephone" column="telephone"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="createUserId" column="create_user_id"/>
+                        <result property="updateTime" column="update_time"/>
+                        <result property="updateUserId" column="update_user_id"/>
+            </resultMap>
+  <resultMap id="bsNetworkingUnitVoMap" type="com.pig4cloud.pigx.admin.api.vo.NetworkingUnitVo">
+                  <id property="unitId" column="unit_id"/>
+                        <result property="name" column="name"/>
+                        <result property="orgType" column="org_type"/>
+                        <result property="orgId" column="org_id"/>
+                        <result property="provId" column="prov_id"/>
+                        <result property="cityId" column="city_id"/>
+                        <result property="areaId" column="area_id"/>
+                        <result property="address" column="address"/>
+                        <result property="contacts" column="contacts"/>
+                        <result property="telephone" column="telephone"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="createUserId" column="create_user_id"/>
+                        <result property="updateTime" column="update_time"/>
+                        <result property="updateUserId" column="update_user_id"/>
+                        <result property="areaName" column="area_name"/>
+                        <result property="orgTypeName" column="org_type_name"/>
+            </resultMap>
+ <select id="getUnitById" resultMap="bsNetworkingUnitVoMap">
+      select bsn.unit_id,
+             bsn.name,
+			 bsn.org_type,
+			 bsn.org_id,
+			 bsn.prov_id,
+			 bsn.city_id,
+			 bsn.area_id,
+			 bsn.address,
+			 bsn.contacts,
+			 bsn.telephone,
+			 bsn.create_time,
+			 bsn.create_user_id,
+			 bsn.update_time,
+			 bsn.update_user_id,
+			 bsa.name as area_name,
+			 syso.name as org_type_name
+			 from bs_networking_unit bsn
+			 left join bs_area bsa on bsn.area_id=bsa.area_id
+			 left join sys_org_type syso on bsn.org_type=syso.type_id
+			 <where>
+			   <if test="unitId != null and unitId != ''">
+				and unit_id=#{unitId}
+			  </if>
+			 </where>
+ </select>
+
+
+    <!-- 根据id批量查询联网单位机构关系信息 -->
+    <select id="findBatch" resultMap="bsNetworkingUnitMap">
+        select bsn.unit_id,bsn.name
+        from bs_networking_unit bsn
+        <where>
+             <choose>
+                 <when test="unitIds!=null and unitIds.size()>0">
+                     and unit_id in
+                     <foreach collection="unitIds" item="unitId" open="(" close=")" separator=",">
+                         #{unitId}
+                     </foreach>
+                 </when>
+                 <otherwise>
+                     and unit_id in ('')
+                 </otherwise>
+             </choose>
+        </where>
+    </select>
+</mapper>

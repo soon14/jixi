@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~
+  ~      Copyright (c) 2018-2025, lengleng All rights reserved.
+  ~
+  ~  Redistribution and use in source and binary forms, with or without
+  ~  modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice,
+  ~  this list of conditions and the following disclaimer.
+  ~  Redistributions in binary form must reproduce the above copyright
+  ~  notice, this list of conditions and the following disclaimer in the
+  ~  documentation and/or other materials provided with the distribution.
+  ~  Neither the name of the pig4cloud.com developer nor the names of its
+  ~  contributors may be used to endorse or promote products derived from
+  ~  this software without specific prior written permission.
+  ~  Author: lengleng (wangiegie@gmail.com)
+  ~
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pigx.api.application.mapper.DmAlarminfoMapper">
+
+    <resultMap id="dmAlarminfoMap" type="com.pig4cloud.pigx.api.application.entity.DmAlarminfo">
+        <id property="id" column="id"/>
+        <result property="deviceCode" column="device_code"/>
+        <result property="sendTime" column="send_time"/>
+        <result property="eventCount" column="event_count"/>
+        <result property="eventType" column="event_type"/>
+        <result property="eventDesc" column="event_desc"/>
+        <result property="alarmTime" column="alarm_time"/>
+        <result property="alarmTypeId" column="alarm_type_id"/>
+        <result property="alarmType" column="alarm_type"/>
+        <result property="alarmValue" column="alarm_value"/>
+        <result property="deviceStatus" column="device_status"/>
+        <result property="extend2" column="extend_2"/>
+        <result property="appendTime" column="append_time"/>
+        <result property="handleTime" column="handle_time"/>
+        <result property="handlePerson" column="handle_person"/>
+        <result property="handleResult" column="handle_result"/>
+        <result property="handleReason" column="handle_reason"/>
+    </resultMap>
+    <resultMap id="dmAlarminfoVoMap" type="com.pig4cloud.pigx.api.application.vo.DmAlarminfoVo">
+        <id property="id" column="id"/>
+        <result property="deviceCode" column="device_code"/>
+        <result property="sendTime" column="send_time"/>
+        <result property="eventCount" column="event_count"/>
+        <result property="eventType" column="event_type"/>
+        <result property="eventDesc" column="event_desc"/>
+        <result property="alarmTime" column="alarm_time"/>
+        <result property="alarmTypeId" column="alarm_type_id"/>
+        <result property="alarmType" column="alarm_type"/>
+        <result property="alarmValue" column="alarm_value"/>
+        <result property="deviceStatus" column="device_status"/>
+        <result property="extend2" column="extend_2"/>
+        <result property="appendTime" column="append_time"/>
+        <result property="handleTime" column="handle_time"/>
+        <result property="handlePerson" column="handle_person"/>
+        <result property="handleResult" column="handle_result"/>
+        <result property="handleReason" column="handle_reason"/>
+        <result property="devName" column="dev_name"/>
+        <result property="devPosition" column="dev_position"/>
+        <result property="typeId" column="type_id"/>
+        <result property="networkUnitId" column="network_unit_id"/>
+        <result property="networkUnitName" column="network_unit_name"/>
+        <result property="buildName" column="build_name"/>
+        <result property="buildId" column="build_id"/>
+        <result property="countyId" column="county_id"/>
+        <result property="countyName" column="county_name"/>
+        <result property="eventTypeDesc" column="event_type_desc"/>
+        <result property="position" column="position"/>
+    </resultMap>
+
+    <select id="getDmAlarmRecord" resultMap="dmAlarminfoVoMap">
+        select da.id,
+        da.device_code,
+        da.device_status,
+        da.alarm_time,
+        da.alarm_type_id,
+        da.alarm_value,
+        da.handle_result,
+        dd.name as dev_name,
+        dd.type_id,
+        dd.position as dev_position,
+        dp.name as prod_name
+        from dm_alarminfo da
+        left join dm_device dd on da.device_code=dd.code
+        left join dm_product dp on dd.prod_id=dp.id
+        <where>
+            <if test="query.typeId != null and query.typeId != ''">
+                and dd.type_id=#{query.typeId}
+            </if>
+            <if test="query.alarmTimeCon != null and query.alarmTimeCon != ''">
+                and da.alarm_time like CONCAT(#{query.alarmTimeCon}, '%')
+            </if>
+            <if test="query.deviceStatus != null ">
+                and da.device_status=#{query.deviceStatus}
+            </if>
+            <if test="unitIds.size() > 0">
+                and dd.network_unit_id in
+                <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+                    #{unitId}
+                </foreach>
+            </if>
+        </where>
+        order by da.send_time desc
+    </select>
+    <select id="getDmAlarmDetail" resultType="com.pig4cloud.pigx.api.application.vo.DmAlarminfoVo">
+            select da.id,
+                   da.device_code,
+				   da.alarm_time,
+				   da.alarm_type_id,
+				   dd.name as dev_name,
+				   dd.position as dev_position,
+				   dd.network_unit_id,
+				   dd.network_unit_name,
+				   dd.type_id,
+				   dd.alarm_type,
+				   dp.name as prod_name
+         from dm_alarminfo da
+				 left join dm_device dd on da.device_code=dd.code
+				 left join dm_product dp on dd.prod_id=dp.id
+				 where da.id=#{alarmId}
+            </select>
+    <update id="alarmHandle">
+              update dm_alarminfo set device_status=#{save.deviceStatus},handle_time=#{save.handleTime},handle_person=#{save.handlePerson},
+                        handle_result=#{save.handleResult},handle_reason=#{save.handleReason}
+												where device_code=#{save.deviceCode}
+            </update>
+    <update id="updateAlarmStatus">
+              update dm_alarminfo set device_status=#{save.deviceStatus}
+												where device_code=#{save.deviceCode}
+            </update>
+    <update id="updateDevice">
+             update dm_device set alarm_type=#{save.alarmTypeId} where code=#{save.deviceCode}
+            </update>
+
+    <select id="selectLastAlarm" resultType="com.pig4cloud.pigx.api.application.entity.DmAlarminfo">
+        SELECT * FROM dm_alarminfo
+        where device_code = #{deviceCode}
+        ORDER BY send_time DESC LIMIT 0,1
+    </select>
+    <select id="getAlarmInfoByEvent" resultMap="dmAlarminfoVoMap">
+        select alarm.device_code,alarm.send_time,alarm.event_desc,device.type_id,'event_type' as event_type_desc,
+        device.name as dev_name,
+        device.network_unit_id,
+        device.network_unit_name,
+        device.build_id,
+        device.build_name,
+        device.county_id,
+        device.county_name,
+        device.position as dev_position,device.longitude,device.latitude from
+        (select device_code,max(send_time) as send_time,max(event_desc) as event_desc from dm_alarminfo
+        <where>
+            <if test="eventType !=null and eventType !=''">
+                and event_type =#{eventType}
+            </if>
+            and device_status=#{deviceStatus} group by device_code
+        </where>
+
+        ) alarm
+        left join dm_device device on alarm.device_code=device.code and device.is_delete=0
+        <where>
+            <if test="unitIds != null and unitIds.size()>0">
+                and device.network_unit_id in
+                <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+                    #{unitId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    <select id="selectGraphStatistics" resultType="com.pig4cloud.pigx.api.application.vo.DmAlarminfoVo">
+        select a.*,d.type_id
+        from dm_alarminfo a
+        left join dm_device d
+        on a.device_code = d.code
+        where 1 = 1
+        <if test="unitIds != null and unitIds.size()>0">
+            and d.network_unit_id in
+            <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+                #{unitId}
+            </foreach>
+        </if>
+        and YEARWEEK(date_format(a.alarm_time,'%Y-%m-%d')) = YEARWEEK(now())
+        and d.is_delete = 0
+    </select>
+    <select id="findAlarmInfoWeek" resultMap="dmAlarminfoVoMap">
+        SELECT
+            a.alarm_time,
+            a.alarm_type,
+            a.event_desc,
+            a.device_code,
+            d.build_name,
+            d.county_name,
+            d.position
+        FROM
+	        dm_alarminfo a
+        LEFT JOIN dm_device d ON a.device_code = d.`code`
+        WHERE a.alarm_type_id IN (2, 3)
+        <if test="deviceStatus !=null and deviceStatus !=''">
+            and a.device_status=#{deviceStatus}
+        </if>
+        <if test="unitIds != null and unitIds.size()>0">
+            and d.network_unit_id in
+            <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+                #{unitId}
+            </foreach>
+        </if>
+	    AND YEARWEEK(date_format(a.alarm_time,'%Y-%m-%d')) = YEARWEEK(now())
+	    order by a.alarm_time desc
+    </select>
+    <select id="findAlarmInfoByTime" resultMap="dmAlarminfoVoMap">
+        SELECT
+        a.alarm_time,
+        a.event_desc,
+        a.device_code,
+        d.network_unit_name
+        FROM
+        dm_alarminfo a
+        LEFT JOIN dm_device d ON a.device_code = d.`code`
+        <where>
+        <if test="query.deviceStatus !=null and query.deviceStatus !=''">
+            and a.device_status=#{query.deviceStatus}
+        </if>
+        <if test="unitIds != null and unitIds.size()>0">
+            and d.network_unit_id in
+            <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+                #{unitId}
+            </foreach>
+        </if>
+            and YEARWEEK(date_format(a.alarm_time,'%Y-%m-%d')) = YEARWEEK(now())
+        </where>
+    </select>
+
+
+    <select id="findAlarmInfoCountByTime" resultType="map">
+        SELECT
+        ifnull(device_status,0) as device_status,
+        count(device_status) as counts
+        FROM
+        dm_alarminfo a
+        LEFT JOIN dm_device d ON a.device_code = d.`code`
+        <where>
+            <if test="unitIds != null and unitIds.size()>0">
+                and d.network_unit_id in
+                <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+                    #{unitId}
+                </foreach>
+            </if>
+            and YEARWEEK(date_format(a.alarm_time,'%Y-%m-%d')) = YEARWEEK(now())
+            and device_status = 0
+        </where>
+        union all
+        SELECT
+        device_status,
+        count(device_status) as counts
+        FROM
+        dm_alarminfo a
+        LEFT JOIN dm_device d ON a.device_code = d.`code`
+        <where>
+            <if test="unitIds != null and unitIds.size()>0">
+                and d.network_unit_id in
+                <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+                    #{unitId}
+                </foreach>
+            </if>
+            and YEARWEEK(date_format(a.alarm_time,'%Y-%m-%d')) = YEARWEEK(now())
+            and device_status = 1
+        </where>
+
+    </select>
+
+
+    <select id="tJAlarmInfo" resultType="map">
+        SELECT  COUNT(0)  AS counts,'未处理' AS deviceStatus FROM `dm_alarminfo` a
+        LEFT JOIN dm_device d ON a.device_code = d.`code` AND d.is_delete = 0
+        <where>
+            AND a.device_status='0'
+            and YEARWEEK(date_format(a.alarm_time,'%Y-%m-%d')) = YEARWEEK(now())
+            <if test="unitIds != null and unitIds.size()>0">
+                and d.network_unit_id in
+                <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+                    #{unitId}
+                </foreach>
+            </if>
+        </where>
+        group by device_status
+        union all
+        SELECT  COUNT(0)  AS counts,'已处理' AS deviceStatus FROM `dm_alarminfo` a
+        LEFT JOIN dm_device d ON a.device_code = d.`code` AND d.is_delete = 0
+        <where>
+            AND a.device_status='1'
+            and YEARWEEK(date_format(a.alarm_time,'%Y-%m-%d')) = YEARWEEK(now())
+            <if test="unitIds != null and unitIds.size()>0">
+                and d.network_unit_id in
+                <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+                    #{unitId}
+                </foreach>
+            </if>
+        </where>
+        group by device_status
+    </select>
+    <select id="selectUnitAlarmDeviceStatistics" resultType="map">
+        SELECT COUNT(0) AS counts,d.type_id AS typeId,d.network_unit_id as networkUnitId
+        FROM dm_alarminfo a
+        LEFT JOIN dm_device d ON a.device_code = d.`code` AND d.is_delete = 0
+        <where>
+            and YEARWEEK(date_format(a.alarm_time,'%Y-%m-%d')) = YEARWEEK(now())
+            <if test="unitIds != null and unitIds.size()>0">
+                and d.network_unit_id in
+                <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+                    #{unitId}
+                </foreach>
+            </if>
+        </where>
+        GROUP BY d.type_id,d.network_unit_id
+</select>
+    <select id="selectDeviceAlarmTrendStatistics" resultType="map">
+        SELECT a.click_date AS days,
+        IFNULL(b.count,0) AS counts
+        FROM
+        (
+        SELECT CURDATE() AS click_date
+        UNION ALL
+        SELECT DATE_SUB(CURDATE(), INTERVAL 1 DAY) AS click_date
+        UNION ALL
+        SELECT DATE_SUB(CURDATE(), INTERVAL 2 DAY) AS click_date
+        UNION ALL
+        SELECT DATE_SUB(CURDATE(), INTERVAL 3 DAY) AS click_date
+        UNION ALL
+        SELECT DATE_SUB(CURDATE(), INTERVAL 4 DAY) AS click_date
+        UNION ALL
+        SELECT DATE_SUB(CURDATE(), INTERVAL 5 DAY) AS click_date
+        UNION ALL
+        SELECT DATE_SUB(CURDATE(), INTERVAL 6 DAY) AS click_date
+        ) a
+        LEFT JOIN (
+        SELECT DATE(alarm_time) AS DATETIME,
+        COUNT(0) AS COUNT
+        FROM dm_alarminfo a
+        LEFT JOIN dm_device d ON a.device_code = d. CODE AND d.is_delete = 0
+        <where>
+            <if test="unitIds != null and unitIds.size()>0">
+                and d.network_unit_id in
+                <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+                    #{unitId}
+                </foreach>
+            </if>
+        </where>
+        GROUP BY DATE(alarm_time)
+        ) b ON a.click_date = b.datetime
+    </select>
+</mapper>

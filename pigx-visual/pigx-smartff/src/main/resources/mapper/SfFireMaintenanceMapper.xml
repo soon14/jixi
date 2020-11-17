@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pigx.smartff.generator.mapper.SfFireMaintenanceMapper">
+
+  <resultMap id="sfFireMaintenanceMap" type="com.pig4cloud.pigx.smartff.generator.entity.SfFireMaintenance">
+                  <id property="id" column="id"/>
+                        <result property="code" column="code"/>
+                        <result property="companyId" column="company_id"/>
+                        <result property="companyName" column="company_name" />
+                        <result property="contactWay" column="contact_way"/>
+                        <result property="produceCate" column="produce_cate"/>
+                        <result property="produceName" column="produce_name"/>
+                        <result property="factorId" column="factor_id"/>
+                        <result property="brandId" column="brand_id"/>
+                        <result property="area" column="area"/>
+                        <result property="deviceCode" column="device_code"/>
+                        <result property="deviceName" column="device_name"/>
+                        <result property="networkUnitId" column="network_unit_id"/>
+                        <result property="networkUnitName" column="netwokr_unit_name"/>
+                        <result property="buildId" column="build_id"/>
+                        <result property="buildName" column="build_name" />
+                        <result property="countyId" column="county_id"/>
+                        <result property="countyName" column="county_name" />
+                        <result property="position" column="position"/>
+                        <result property="faultDesc" column="fault_desc"/>
+                        <result property="createUserId" column="create_user_id"/>
+                        <result property="createUserName" column="create_user_name"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="updateUserId" column="update_user_id"/>
+                        <result property="updateUserName" column="update_user_name"/>
+                        <result property="updateTime" column="update_time"/>
+            </resultMap>
+</mapper>

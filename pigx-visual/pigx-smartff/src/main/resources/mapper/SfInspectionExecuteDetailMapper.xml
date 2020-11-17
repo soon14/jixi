@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pigx.smartff.generator.mapper.SfInspectionExecuteDetailMapper">
+
+    <resultMap id="sfInspectionExecuteDetailMap"
+               type="com.pig4cloud.pigx.smartff.generator.entity.SfInspectionExecuteDetail">
+        <id property="id" column="id"/>
+        <result property="taskid" column="taskid"/>
+        <result property="executeid" column="executeid"/>
+        <result property="pointId" column="point_id"/>
+        <result property="pointName" column="point_name"/>
+        <result property="pointBuildId" column="point_build_id"/>
+        <result property="pointBuildName" column="point_build_name"/>
+        <result property="pointRegionId" column="point_region_id"/>
+        <result property="pointRegionName" column="point_region_name"/>
+        <result property="devicetype" column="devicetype"/>
+        <result property="devicenum" column="devicenum"/>
+        <result property="deviceaddress" column="deviceaddress"/>
+        <result property="pointTime" column="point_time"/>
+        <result property="pointUser" column="point_user"/>
+        <result property="pointUserName" column="point_user_name"/>
+        <result property="pointImageId" column="point_image_id"/>
+        <result property="isInspection" column="is_inspection"/>
+        <result property="pointFloor" column="point_floor"/>
+        <result property="orgId" column="org_id"/>
+        <result property="orgName" column="org_name"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+
+    <update id="updateForCheck" parameterType="com.pig4cloud.pigx.smartff.generator.entity.SfInspectionExecuteDetail" >
+        update sf_inspection_execute_detail
+        <set >
+            <if test="taskid != null" >
+                taskid = #{taskid,jdbcType=VARCHAR},
+            </if>
+            <if test="executeid != null" >
+                executeid = #{executeid,jdbcType=VARCHAR},
+            </if>
+            <if test="pointId != null" >
+                point_id = #{pointId,jdbcType=VARCHAR},
+            </if>
+            <if test="pointName != null" >
+                point_name = #{pointName,jdbcType=VARCHAR},
+            </if>
+            <if test="pointBuildId != null" >
+                point_build_id = #{pointBuildId,jdbcType=VARCHAR},
+            </if>
+            <if test="pointBuildName != null" >
+                point_build_name = #{pointBuildName,jdbcType=VARCHAR},
+            </if>
+            <if test="pointRegionId != null" >
+                point_region_id = #{pointRegionId,jdbcType=VARCHAR},
+            </if>
+            <if test="pointRegionName != null" >
+                point_region_name = #{pointRegionName,jdbcType=VARCHAR},
+            </if>
+            <if test="devicetype != null" >
+                devicetype = #{devicetype,jdbcType=VARCHAR},
+            </if>
+            <if test="devicenum != null" >
+                devicenum = #{devicenum,jdbcType=VARCHAR},
+            </if>
+            <if test="deviceaddress != null" >
+                deviceaddress = #{deviceaddress,jdbcType=VARCHAR},
+            </if>
+            <if test="pointTime != null" >
+                point_time = #{pointTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="pointUser != null" >
+                point_user = #{pointUser,jdbcType=VARCHAR},
+            </if>
+            <if test="pointUserName != null" >
+                point_user_name = #{pointUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="pointImageId != null" >
+                point_image_id = #{pointImageId,jdbcType=VARCHAR},
+            </if>
+            <if test="isInspection != null" >
+                is_inspection = #{isInspection,jdbcType=TINYINT},
+            </if>
+            <if test="remark != null" >
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+    
+    <select id="findByIsInspectionCount" resultType="java.lang.Integer">
+        select count(*) from sf_inspection_execute_detail
+        <where>
+            <if test="query.isInspection != null and query.isInspection != ''">
+                and is_inspection = #{query.isInspection}
+            </if>
+            <if test="query.taskid != null and query.taskid != ''">
+                 and taskid = #{query.taskid}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectLastModifiExecuteDetail" resultType="com.pig4cloud.pigx.smartff.generator.entity.SfInspectionExecuteDetail">
+        SELECT * FROM sf_inspection_execute_detail
+        where taskid = #{taskid}
+        ORDER BY pointTime DESC LIMIT 0,1
+    </select>
+</mapper>

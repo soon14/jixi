@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pigx.api.application.mapper.SfInspectionExecuteDetailMapper">
+
+    <resultMap id="sfInspectionExecuteDetailMap"
+               type="com.pig4cloud.pigx.api.application.entity.SfInspectionExecuteDetail">
+        <id property="id" column="id"/>
+        <result property="taskid" column="taskid"/>
+        <result property="executeid" column="executeid"/>
+        <result property="pointId" column="point_id"/>
+        <result property="pointName" column="point_name"/>
+        <result property="pointBuildId" column="point_build_id"/>
+        <result property="pointBuildName" column="point_build_name"/>
+        <result property="pointRegionId" column="point_region_id"/>
+        <result property="pointRegionName" column="point_region_name"/>
+        <result property="devicetype" column="devicetype"/>
+        <result property="devicenum" column="devicenum"/>
+        <result property="deviceaddress" column="deviceaddress"/>
+        <result property="pointTime" column="point_time"/>
+        <result property="pointUser" column="point_user"/>
+        <result property="pointUserName" column="point_user_name"/>
+        <result property="pointImageId" column="point_image_id"/>
+        <result property="isInspection" column="is_inspection"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+    <resultMap id="SfInspectionExecuteDetailVoMap"
+               type="com.pig4cloud.pigx.api.application.vo.SfInspectionExecuteDetailVo">
+        <id property="id" column="id"/>
+        <result property="taskid" column="taskid"/>
+        <result property="executeid" column="executeid"/>
+        <result property="pointId" column="point_id"/>
+        <result property="pointName" column="point_name"/>
+        <result property="pointBuildId" column="point_build_id"/>
+        <result property="pointBuildName" column="point_build_name"/>
+        <result property="pointRegionId" column="point_region_id"/>
+        <result property="pointRegionName" column="point_region_name"/>
+        <result property="devicetype" column="devicetype"/>
+        <result property="devicenum" column="devicenum"/>
+        <result property="deviceaddress" column="deviceaddress"/>
+        <result property="pointTime" column="point_time"/>
+        <result property="pointUser" column="point_user"/>
+        <result property="pointUserName" column="point_user_name"/>
+        <result property="pointImageId" column="point_image_id"/>
+        <result property="isInspection" column="is_inspection"/>
+        <result property="binding" column="binding"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    
+    <select id="findCountByIsInspection" resultType="java.lang.Integer">
+        select count(0) from sf_inspection_execute_detail
+        <where>
+            <if test="query.isInspection != null and query.isInspection != ''">
+                and is_inspection = #{query.isInspection}
+            </if>
+            <if test="query.executeid != null and query.executeid != ''">
+                and executeid = #{query.executeid}
+            </if>
+        </where>
+    </select>
+    
+   <select id="getExecuteDetailByExeId" resultMap="SfInspectionExecuteDetailVoMap">
+    select detail.id,
+           detail.point_id,
+		   detail.point_name,
+		   detail.is_inspection,
+		   point.binding
+		   from sf_inspection_execute_detail detail
+		   left join sf_inspection_point point on detail.point_id=point.id where executeid=#{executeId}
+    </select>
+    
+    <select id="getExecuteDetailByDetailId" resultType="com.pig4cloud.pigx.api.application.vo.SfInspectionExecuteDetailVo">
+    select sfd.id,
+			        sfd.org_id,
+			        sfd.org_name,
+					sfd.point_region_id,
+					sfd.point_region_name,
+					sfd.devicetype,
+					sfd.devicenum,
+					sfd.point_time,
+					sfd.point_image_id,
+					sfd.remark,
+					sfe.end_time,
+					sfp.produce_date,
+					sfp.expirationdate
+					from sf_inspection_execute_detail sfd
+					left join sf_inspection_execute sfe on sfd.executeid=sfe.id
+					left join sf_inspection_point sfp on sfd.point_id=sfp.id
+					where sfd.id=#{detailId}
+    </select>
+    <update id="saveInspectionResult">
+      update sf_inspection_execute_detail  
+                                set point_time=#{save.pointTime},
+                                    point_user=#{save.pointUser},
+                                    point_user_name=#{save.pointUserName},
+                                    is_inspection=#{save.isInspection},
+                                    point_image_id=#{save.pointImageId},
+                                    remark=#{save.remark} where id=#{save.id}
+    </update>
+    <select id="getInspectionEvent" resultType="com.pig4cloud.pigx.api.application.vo.SfInspectionExecuteDetailVo">
+      select exe.begin_time as inspectBeginTime,
+             exe.end_time as inspectEndTime,
+			 detail.point_name,
+			 detail.point_build_name,
+			 detail.point_region_name,
+			 detail.deviceaddress,
+			 point.longitude,
+			 point.latitude from sf_inspection_execute_detail detail
+             left join sf_inspection_execute exe on exe.id=detail.executeid
+			 left join sf_inspection_point point on detail.point_id=point.id
+             <where>
+             <if test="isInspection!=null and isInspection!=''">
+                and detail.isInspection=#{isInspection}
+             </if>
+             <if test="status!=null and status!=''">
+                and exe.status=#{status}
+             </if>
+              <if test="unitIds.size() > 0">
+                and exe.org_id in
+                <foreach collection="unitIds" item="unitId" index="index" open="(" close=")" separator=",">
+                    #{unitId}
+                </foreach>
+            </if>
+             </where>
+    </select>
+
+</mapper>

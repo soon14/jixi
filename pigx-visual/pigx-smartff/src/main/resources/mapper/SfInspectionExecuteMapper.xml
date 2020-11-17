@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pig4cloud.pigx.smartff.generator.mapper.SfInspectionExecuteMapper">
+
+    <resultMap id="sfInspectionExecuteMap" type="com.pig4cloud.pigx.smartff.generator.entity.SfInspectionExecute">
+        <id property="id" column="id"/>
+        <result property="taskid" column="taskid"/>
+        <result property="taskname" column="taskname"/>
+        <result property="orgId" column="org_id"/>
+        <result property="orgName" column="org_name"/>
+        <result property="buildid" column="buildid"/>
+        <result property="tourBuildName" column="tour_build_name"/>
+        <result property="tourlist" column="tourlist"/>
+        <result property="persons" column="persons"/>
+        <result property="beginTime" column="begin_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="status" column="status"/>
+        <result property="createUserId" column="create_user_id"/>
+        <result property="createUserName" column="create_user_name"/>
+        <result property="createtime" column="createtime"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+
+    <select id="selectByTaskId" resultType="com.pig4cloud.pigx.smartff.generator.entity.SfInspectionExecute">
+         select * from sf_inspection_execute
+         where id = #{query.id}
+    </select>
+
+    <select id="selectByTaskIdToPointList" resultType="com.pig4cloud.pigx.smartff.generator.entity.SfInspectionPoint">
+         select * from sf_inspection_point p
+         where p.id in
+        <foreach collection="arr" item="pointId" index="index" open="(" close=")" separator=",">
+            #{pointId}
+        </foreach>
+    </select>
+    
+    <select id="selectByOrgId" resultType="com.pig4cloud.pigx.smartff.generator.vo.SfInspectionResultVO">
+         select * from sf_inspection_execute
+         <where>
+             <if test="query.unitIds !=null and query.unitIds.size() > 0">
+                 and org_id in
+                 <foreach collection="query.unitIds" item="orgId" index="index" open="(" close=")" separator=",">
+                     #{orgId}
+                 </foreach>
+             </if>
+             <if test="query.orgId != null and query.orgId != ''">
+                 org_id = query.orgId}
+             </if>
+             <if test="query.status != null and query.status != ''">
+                 and status = #{query.status}
+             </if>
+         </where>
+    </select>
+
+    <select id="findTaskByJobEnd" resultType="com.pig4cloud.pigx.smartff.generator.entity.SfInspectionExecute">
+        select e.* from sf_inspection_execute e
+        where YEARWEEK(date_format(end_time,'%Y-%m-%d')) = YEARWEEK(now())
+    </select>
+
+    <select id="findTasktList" resultType="com.pig4cloud.pigx.smartff.generator.entity.SfInspectionExecute">
+        select * from sf_inspection_execute
+        <where>
+            <if test="query.unitIds !=null and query.unitIds.size() > 0">
+                and org_id in
+                <foreach collection="query.unitIds" item="orgId" index="index" open="(" close=")" separator=",">
+                    #{orgId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+</mapper>

@@ -1,0 +1,107 @@
+# 使用说明 V3.0.0
+# 1. 使用docker-compose  宿主机不需要配置host来发现
+# 2. 无需修改源码，根目录  docker-compose up 即可
+# 3. 静静等待服务启动
+
+version: '2'
+services:
+  pigx-mysql:
+    build:
+      context: ./db
+    environment:
+      MYSQL_ROOT_PASSWORD: admin123
+    restart: always
+    container_name: pigx-mysql
+    image: pigx-mysql
+    ports:
+      - 3306:3306
+    volumes:
+      - ./pigx-mysql:/var/lib/mysql
+    command: --lower_case_table_names=1
+
+  pigx-redis:
+    image: redis:5.0.7
+    restart: always
+    container_name: pigx-redis
+    ports:
+      - 6379:6379
+
+  pigx-minio:
+    image: minio/minio
+    command: server /data
+    ports:
+      - 9000:9000
+    volumes:
+      - ./data:/data
+      - ./config:/root/.minio
+    environment:
+      - MINIO_DOMAIN=pigx-minio
+      - MINIO_ACCESS_KEY=lengleng
+      - MINIO_SECRET_KEY=lengleng
+
+  pigx-register:
+    build:
+      context: ./pigx-register
+    restart: always
+    container_name: pigx-register
+    image: pigx-register
+    ports:
+      - 8848:8848
+
+  pigx-gateway:
+    build:
+      context: ./pigx-gateway
+    restart: always
+    container_name: pigx-gateway
+    image: pigx-gateway
+    ports:
+      - 9999:9999
+
+  pigx-auth:
+    build:
+      context: ./pigx-auth
+    restart: always
+    container_name: pigx-auth
+    image: pigx-auth
+
+  pigx-upms-biz:
+    build:
+      context: ./pigx-upms/pigx-upms-biz
+    restart: always
+    container_name: pigx-upms-biz
+    image: pigx-upms-biz
+
+  pigx-api:
+    build:
+      context: ./pigx-visual/pigx-api
+    restart: always
+    image: pigx-api
+    container_name: pigx-api
+    ports:
+      - 4506:4506
+
+  pigx-device:
+    build:
+      context: ./pigx-visual/pigx-device
+    restart: always
+    image: pigx-device
+    container_name: pigx-device
+    ports:
+      - 4500:4500
+      - 5000:5000
+
+  pigx-smartff:
+    build:
+      context: ./pigx-visual/pigx-smartff
+    restart: always
+    image: pigx-smartff
+    container_name: pigx-smartff
+    ports:
+      - 4600:4600
+
+  pigx-daemon-elastic-job:
+    build:
+      context: ./pigx-visual/pigx-daemon-elastic-job
+    restart: always
+    image: pigx-daemon-elastic-job
+    container_name: pigx-daemon-elastic-job
