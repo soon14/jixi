@@ -3,7 +3,6 @@
 # 2. 无需修改源码，根目录  docker-compose up 即可
 # 3. 静静等待服务启动
 
-# 测试
 version: '2'
 services:
   pigx-mysql:
